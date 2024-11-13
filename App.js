@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Appointment from './screens/Appointment';
 import Discovery from './screens/Discovery';
+import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
 import { View } from 'react-native';
 
@@ -31,6 +32,16 @@ function Tabs() {
         component={Appointment}
         options={{
           title: 'Train with Us Today',
+          // tabBarIcon: () => (
+          //   <FontAwesome5 name="running" size={24} color="black" />
+          // ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          title: 'Profile',
           // tabBarIcon: () => (
           //   <FontAwesome5 name="running" size={24} color="black" />
           // ),
