@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
+import moment from 'moment';
 
 const times = [
   '9:00 AM',
@@ -20,20 +21,45 @@ const times = [
 ];
 
 const Reserve = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const today = moment().format('YYYY-MM-DD');
+  const currentTime = moment().format('hh:mm A');
+
+  const hasAvailableTimesToday = times.some((time) =>
+    moment(time, 'hh:mm A').isAfter(moment(currentTime, 'hh:mm A'))
+  );
+  const minDate = hasAvailableTimesToday
+    ? today
+    : moment().add(1, 'day').format('YYYY-MM-DD');
+
+  const [selectedDate, setSelectedDate] = useState(minDate);
   const [selectedTime, setSelectedTime] = useState(null);
+
+  const filteredTimes =
+    selectedDate === today
+      ? times.filter((time) =>
+          moment(time, 'hh:mm A').isAfter(moment(currentTime, 'hh:mm A'))
+        )
+      : times;
+
+  const onDayPress = (day) => {
+    if (moment(day.dateString).isSameOrAfter(minDate)) {
+      setSelectedDate(day.dateString);
+      setSelectedTime(null);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <Calendar
-        onDayPress={(day) => setSelectedDate(day.dateString)}
+        onDayPress={onDayPress}
         markedDates={{
           [selectedDate]: { selected: true, selectedColor: 'black' },
         }}
+        minDate={minDate}
       />
       <Text style={styles.selectedDateText}>Selected Date: {selectedDate}</Text>
       <FlatList
-        data={times}
+        data={filteredTimes}
         numColumns={2}
         keyExtractor={(item) => item}
         renderItem={({ item }) => (
@@ -43,8 +69,19 @@ const Reserve = () => {
               item === selectedTime && styles.selectedTimeSlot,
             ]}
             onPress={() => setSelectedTime(item)}
+            disabled={
+              selectedDate === today &&
+              moment(item, 'hh:mm A').isBefore(moment())
+            }
           >
-            <Text style={styles.timeText}>{item}</Text>
+            <Text
+              style={[
+                styles.timeText,
+                selectedTime === item && { color: '#fff' },
+              ]}
+            >
+              {item}
+            </Text>
           </TouchableOpacity>
         )}
         contentContainerStyle={styles.timeSlotsContainer}
