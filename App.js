@@ -3,7 +3,10 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Appointment from './screens/Appointment';
 import Discovery from './screens/Discovery';
+import Exercise from './screens/Exercise';
+import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
+import Reserve from './screens/Reserve';
 import { View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -36,6 +39,26 @@ function Tabs() {
           // ),
         }}
       />
+      <Tab.Screen
+        name="Exercise"
+        component={Exercise}
+        options={{
+          title: 'Exercise',
+          // tabBarIcon: () => (
+          //   <FontAwesome5 name="running" size={24} color="black" />
+          // ),
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={Profile}
+        options={{
+          title: 'Profile',
+          // tabBarIcon: () => (
+          //   <FontAwesome5 name="running" size={24} color="black" />
+          // ),
+        }}
+      />
     </Tab.Navigator>
   );
 }
@@ -56,6 +79,13 @@ export default function App() {
           component={NewPost}
           options={{
             title: 'Make New Post',
+          }}
+        />
+        <Stack.Screen
+          name="Reserve"
+          component={Reserve}
+          options={{
+            title: 'Select a Date & Time',
           }}
         />
       </Stack.Navigator>
