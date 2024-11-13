@@ -34,11 +34,11 @@ const trainers = [
     focus: 'Cardio',
     availability: '1 day',
     imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564820.jpg?semt=ais_hybrid',
+      'https://img.freepik.com/free-photo/close-up-people-doing-yoga-indoors_23-2150848089.jpg?semt=ais_hybrid',
   },
 ];
 
-const Appointment = () => {
+const Appointment = ({ navigation }) => {
   const [availabilityFilter, setAvailabilityFilter] = useState(null);
   const [focusFilter, setFocusFilter] = useState(null);
 
@@ -46,12 +46,14 @@ const Appointment = () => {
   const [focusOpen, setFocusOpen] = useState(false);
 
   const availabilityOptions = [
+    { label: 'All', value: null },
     { label: 'Within 1 day', value: '1 day' },
     { label: 'Within 3 days', value: '3 days' },
     { label: 'Within 5 days', value: '5 days' },
   ];
 
   const focusOptions = [
+    { label: 'All', value: null },
     { label: 'Strength', value: 'Strength' },
     { label: 'Yoga', value: 'Yoga' },
     { label: 'Pilates', value: 'Pilates' },
@@ -67,7 +69,6 @@ const Appointment = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Train With Us Today</Text>
       <View style={styles.filterContainer}>
         <DropDownPicker
           open={availabilityOpen}
@@ -99,8 +100,8 @@ const Appointment = () => {
             name={item.name}
             focus={item.focus}
             availability={item.availability}
-            imageUri={item.imageUri} // Pass imageUri prop
-            onPress={() => console.log(`New appointment with ${item.name}`)}
+            imageUri={item.imageUri}
+            navigation={navigation}
           />
         )}
         contentContainerStyle={styles.listContent}

@@ -2,7 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button, Card, Avatar } from 'react-native-paper';
 
-const TrainerCard = ({ name, focus, availability, imageUri, onPress }) => {
+const TrainerCard = ({ name, focus, availability, imageUri, navigation }) => {
+  const handlePress = () => {
+    navigation.navigate('Reserve', { trainerName: name });
+  };
   return (
     <Card style={styles.card}>
       <View style={styles.cardContent}>
@@ -17,17 +20,19 @@ const TrainerCard = ({ name, focus, availability, imageUri, onPress }) => {
         <View style={styles.infoContainer}>
           <Text style={styles.trainerName}>{name}</Text>
           <Text style={styles.trainerFocus}>Focus: {focus}</Text>
+        </View>
+        <View style={styles.availabilityContainer}>
           <Text style={styles.availability}>
             Available within {availability}
           </Text>
+          <Button
+            mode="contained"
+            style={styles.appointmentButton}
+            onPress={handlePress}
+          >
+            Reserve
+          </Button>
         </View>
-        <Button
-          mode="contained"
-          style={styles.appointmentButton}
-          onPress={onPress}
-        >
-          New Appointment
-        </Button>
       </View>
     </Card>
   );
@@ -57,12 +62,18 @@ const styles = StyleSheet.create({
     color: '#555',
     marginVertical: 4,
   },
+  availabilityContainer: {
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+  },
   availability: {
     fontSize: 14,
     color: '#888',
+    marginBottom: 4,
   },
   appointmentButton: {
     backgroundColor: '#007bff',
+    width: 130,
   },
 });
 

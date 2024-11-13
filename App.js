@@ -6,6 +6,7 @@ import Discovery from './screens/Discovery';
 import Exercise from './screens/Exercise';
 import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
+import Reserve from './screens/Reserve';
 import { View } from 'react-native';
 
 const Stack = createNativeStackNavigator();
@@ -78,6 +79,13 @@ export default function App() {
           component={NewPost}
           options={{
             title: 'Make New Post',
+          }}
+        />
+        <Stack.Screen
+          name="Reserve"
+          component={Reserve}
+          options={{
+            title: 'Select a Date & Time',
           }}
         />
       </Stack.Navigator>
