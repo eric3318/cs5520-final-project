@@ -1,4 +1,11 @@
-import { View, Image, Text, StyleSheet, Dimensions } from 'react-native';
+import {
+  View,
+  Image,
+  Text,
+  StyleSheet,
+  Dimensions,
+  Button,
+} from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Card } from 'react-native-paper';
 
@@ -14,12 +21,12 @@ export default function Post({ item }) {
             />
             <View>
               <Text>{item.timestamp}</Text>
-              <Text>{item.username}</Text>
+              <Text>{item.user.username}</Text>
             </View>
           </View>
           <View style={styles.like}>
             <FontAwesome name="heart-o" size={18} color="black" />
-            <Text>{item.numLikes}</Text>
+            <Text>{item.likedBy.length}</Text>
           </View>
         </View>
         <View style={styles.contentSection}>
