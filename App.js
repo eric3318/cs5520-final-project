@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Appointment from './screens/Appointment';
 import Discovery from './screens/Discovery';
+import Exercise from './screens/Exercise';
 import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
 import { View } from 'react-native';
@@ -32,6 +33,16 @@ function Tabs() {
         component={Appointment}
         options={{
           title: 'Train with Us Today',
+          // tabBarIcon: () => (
+          //   <FontAwesome5 name="running" size={24} color="black" />
+          // ),
+        }}
+      />
+      <Tab.Screen
+        name="Exercise"
+        component={Exercise}
+        options={{
+          title: 'Exercise',
           // tabBarIcon: () => (
           //   <FontAwesome5 name="running" size={24} color="black" />
           // ),
