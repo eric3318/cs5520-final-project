@@ -1,11 +1,14 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, Alert } from 'react-native';
 import { TextInput, Button } from 'react-native-paper';
 import { useState } from 'react';
+import { auth } from '../firebase/firebaseSetup';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 
 const SIGNUP = 'Sign Up';
 const LOGIN = 'Log In';
 
-export default function Auth() {
+export default function Auth({ navigation }) {
   const [mode, setMode] = useState(SIGNUP);
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
@@ -31,9 +34,44 @@ export default function Auth() {
     }
   };
 
-  const signUpHandler = () => {};
+  const signUpHandler = async () => {
+    if (!email || !username || !password || !confirmPassword) {
+      Alert.alert('Missing required fields');
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert('Password mismatch');
+      return;
+    }
+    // todo: add more data verification
+    try {
+      const userCred = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log(userCred);
+    } catch (err) {
+      if (err.code === 'auth/weak-password') {
+        Alert.alert('Password should be at least 6 characters');
+      }
+      console.log(err);
+    }
+  };
 
-  const logInHandler = () => {};
+  const logInHandler = async () => {
+    if (!email || !password) {
+      Alert.alert('Missing required fields');
+      return;
+    }
+    // todo: add more data verification
+    try {
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      console.log(userCred);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -54,7 +92,7 @@ export default function Auth() {
         />
       )}
       <View>
-        <Button mode="contained" onPress={authHandler}>
+        <Button mode="contained" onPress={() => authHandler()}>
           {mode}
         </Button>
         <View style={styles.prompt}>
