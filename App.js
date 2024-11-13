@@ -1,20 +1,64 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import Appointment from './screens/Appointment';
+import Discovery from './screens/Discovery';
+import NewPost from './screens/NewPost';
+import { View } from 'react-native';
 
-export default function App() {
+const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
+
+function Tabs() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <Tab.Navigator>
+      <Tab.Screen
+        name="Discovery"
+        component={Discovery}
+        options={{
+          title: 'Discovery',
+          // tabBarIcon: () => (
+          //   <MaterialCommunityIcons
+          //     name="food-drumstick"
+          //     size={24}
+          //     color="black"
+          //   />
+          // ),
+        }}
+      />
+      <Tab.Screen
+        name="Appointment"
+        component={Appointment}
+        options={{
+          title: 'Train with Us Today',
+          // tabBarIcon: () => (
+          //   <FontAwesome5 name="running" size={24} color="black" />
+          // ),
+        }}
+      />
+    </Tab.Navigator>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Tabs"
+          component={Tabs}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="New Post"
+          component={NewPost}
+          options={{
+            title: 'Make New Post',
+          }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
