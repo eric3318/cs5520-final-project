@@ -2,9 +2,16 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Button, Card, Avatar } from 'react-native-paper';
 
-const TrainerCard = ({ name, focus, availability, imageUri, navigation }) => {
+const TrainerCard = ({
+  trainerId,
+  name,
+  focus,
+  availability,
+  imageUri,
+  navigation,
+}) => {
   const handlePress = () => {
-    navigation.navigate('Reserve', { trainerName: name });
+    navigation.navigate('Reserve', { trainerId: trainerId });
   };
   return (
     <Card style={styles.card}>

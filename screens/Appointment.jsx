@@ -1,44 +1,12 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import TrainerCard from '../components/TrainerCard';
-
-const trainers = [
-  {
-    id: '1',
-    name: 'Trainer 1',
-    focus: 'Strength',
-    availability: '3 days',
-    imageUri:
-      'https://img.freepik.com/free-photo/adult-pretty-woman-happy-expression-gym-fitness-teacher-concept-ai-generated_1194-588907.jpg?semt=ais_hybrid',
-  },
-  {
-    id: '2',
-    name: 'Trainer 2',
-    focus: 'Yoga',
-    availability: '5 days',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564785.jpg?semt=ais_hybrid',
-  },
-  {
-    id: '3',
-    name: 'Trainer 3',
-    focus: 'Pilates',
-    availability: '2 days',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564820.jpg?semt=ais_hybrid',
-  },
-  {
-    id: '4',
-    name: 'Trainer 4',
-    focus: 'Cardio',
-    availability: '1 day',
-    imageUri:
-      'https://img.freepik.com/free-photo/close-up-people-doing-yoga-indoors_23-2150848089.jpg?semt=ais_hybrid',
-  },
-];
+import { collection, getDocs } from 'firebase/firestore';
+import { database } from '../firebase/firebaseSetup';
 
 const Appointment = ({ navigation }) => {
+  const [trainers, setTrainers] = useState([]);
   const [availabilityFilter, setAvailabilityFilter] = useState(null);
   const [focusFilter, setFocusFilter] = useState(null);
 
@@ -59,6 +27,19 @@ const Appointment = ({ navigation }) => {
     { label: 'Pilates', value: 'Pilates' },
     { label: 'Cardio', value: 'Cardio' },
   ];
+
+  useEffect(() => {
+    const fetchTrainers = async () => {
+      const trainerCollection = collection(database, 'Trainer');
+      const trainerSnapshot = await getDocs(trainerCollection);
+      const trainerList = trainerSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setTrainers(trainerList);
+    };
+    fetchTrainers();
+  }, []);
 
   const filteredTrainers = trainers.filter((trainer) => {
     const availabilityMatch =
@@ -97,6 +78,7 @@ const Appointment = ({ navigation }) => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TrainerCard
+            trainerId={item.id}
             name={item.name}
             focus={item.focus}
             availability={item.availability}

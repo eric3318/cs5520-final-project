@@ -1,15 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   FlatList,
   TouchableOpacity,
+  Button,
+  Alert,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
+import {
+  getBookedTimeslots,
+  addBookedTimeslot,
+} from '../firebase/firestoreHelper';
 
-const times = [
+const ALL_TIMESLOTS = [
   '9:00 AM',
   '10:00 AM',
   '11:00 AM',
@@ -20,32 +26,50 @@ const times = [
   '4:00 PM',
 ];
 
-const Reserve = () => {
+const Reserve = ({ route, navigation }) => {
+  const { trainerId } = route.params;
   const today = moment().format('YYYY-MM-DD');
-  const currentTime = moment().format('hh:mm A');
 
-  const hasAvailableTimesToday = times.some((time) =>
-    moment(time, 'hh:mm A').isAfter(moment(currentTime, 'hh:mm A'))
-  );
-  const minDate = hasAvailableTimesToday
-    ? today
-    : moment().add(1, 'day').format('YYYY-MM-DD');
-
-  const [selectedDate, setSelectedDate] = useState(minDate);
+  const [bookedTimes, setBookedTimes] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(today);
   const [selectedTime, setSelectedTime] = useState(null);
 
-  const filteredTimes =
-    selectedDate === today
-      ? times.filter((time) =>
-          moment(time, 'hh:mm A').isAfter(moment(currentTime, 'hh:mm A'))
-        )
-      : times;
+  useEffect(() => {
+    const fetchBookedTimes = async () => {
+      const times = await getBookedTimeslots(trainerId, selectedDate);
+      setBookedTimes(times);
+    };
+    fetchBookedTimes();
+  }, [trainerId, selectedDate]);
+
+  const availableTimes = ALL_TIMESLOTS.filter(
+    (time) => !bookedTimes.includes(time)
+  );
+
+  const handleSubmit = async () => {
+    if (!selectedTime) {
+      Alert.alert('Please select a time slot');
+      return;
+    }
+
+    try {
+      await addBookedTimeslot(trainerId, selectedDate, selectedTime);
+      Alert.alert('Appointment confirmed!');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Error booking timeslot:', error);
+      Alert.alert('Could not complete appointment. Please try again.');
+    }
+  };
+
+  const handleCancel = () => {
+    navigation.goBack();
+  };
 
   const onDayPress = (day) => {
-    if (moment(day.dateString).isSameOrAfter(minDate)) {
-      setSelectedDate(day.dateString);
-      setSelectedTime(null);
-    }
+    const selectedDay = day.dateString;
+    setSelectedDate(selectedDay);
+    setSelectedTime(null); // Reset selected time when date changes
   };
 
   return (
@@ -55,11 +79,12 @@ const Reserve = () => {
         markedDates={{
           [selectedDate]: { selected: true, selectedColor: 'black' },
         }}
-        minDate={minDate}
+        minDate={today}
       />
       <Text style={styles.selectedDateText}>Selected Date: {selectedDate}</Text>
+
       <FlatList
-        data={filteredTimes}
+        data={availableTimes}
         numColumns={2}
         keyExtractor={(item) => item}
         renderItem={({ item }) => (
@@ -69,10 +94,6 @@ const Reserve = () => {
               item === selectedTime && styles.selectedTimeSlot,
             ]}
             onPress={() => setSelectedTime(item)}
-            disabled={
-              selectedDate === today &&
-              moment(item, 'hh:mm A').isBefore(moment())
-            }
           >
             <Text
               style={[
@@ -86,25 +107,24 @@ const Reserve = () => {
         )}
         contentContainerStyle={styles.timeSlotsContainer}
       />
+
+      <View style={styles.buttonContainer}>
+        <Button title="Submit" onPress={handleSubmit} />
+        <Button title="Cancel" onPress={handleCancel} color="gray" />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: '#fff',
-  },
+  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
   selectedDateText: {
     fontSize: 18,
     fontWeight: 'bold',
     marginVertical: 16,
     textAlign: 'center',
   },
-  timeSlotsContainer: {
-    paddingVertical: 16,
-  },
+  timeSlotsContainer: { paddingVertical: 16 },
   timeSlot: {
     flex: 1,
     margin: 8,
@@ -114,12 +134,12 @@ const styles = StyleSheet.create({
     borderColor: '#ddd',
     borderRadius: 8,
   },
-  selectedTimeSlot: {
-    backgroundColor: '#007bff',
-  },
-  timeText: {
-    color: '#333',
-    fontSize: 16,
+  selectedTimeSlot: { backgroundColor: '#007bff' },
+  timeText: { color: '#333', fontSize: 16 },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 16,
   },
 });
 

@@ -5,7 +5,9 @@ import {
   collection,
   deleteDoc,
   doc,
+  getDoc,
   updateDoc,
+  arrayUnion,
 } from 'firebase/firestore';
 
 export async function writeToDB(data, collectionName, id = null) {
@@ -25,6 +27,32 @@ export async function deleteFromDB(id, collectionName) {
     await deleteDoc(doc(database, collectionName, id));
   } catch (err) {
     console.log(err);
+  }
+}
+
+export async function getBookedTimeslots(trainerId, date) {
+  try {
+    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerDoc = await getDoc(trainerRef);
+    if (trainerDoc.exists()) {
+      const bookedTimeslots = trainerDoc.data().bookedTimeslots || {};
+      return bookedTimeslots[date] || [];
+    }
+    return [];
+  } catch (error) {
+    console.error('Error fetching booked timeslots:', error);
+    return [];
+  }
+}
+
+export async function addBookedTimeslot(trainerId, date, time) {
+  try {
+    const trainerRef = doc(database, 'Trainer', trainerId);
+    await updateDoc(trainerRef, {
+      [`bookedTimeslots.${date}`]: arrayUnion(time),
+    });
+  } catch (error) {
+    console.error('Error adding booked timeslot:', error);
   }
 }
 
