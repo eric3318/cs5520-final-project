@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import SearchBar from '../components/SearchBar';
 import CategoryCard from '../components/CategoryCard';
 

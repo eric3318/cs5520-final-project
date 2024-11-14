@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
+import React, { useCallback, useState } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import TrainerCard from '../components/TrainerCard';
 import { collection, getDocs } from 'firebase/firestore';

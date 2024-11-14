@@ -1,8 +1,7 @@
-import { Alert, StyleSheet, View, Image } from 'react-native';
+import { Alert, Image, StyleSheet, View } from 'react-native';
 import { writeToDB } from '../firebase/firestoreHelper';
-import { Button } from 'react-native-paper';
+import { Button, TextInput } from 'react-native-paper';
 import { useState } from 'react';
-import { TextInput } from 'react-native-paper';
 import { auth } from '../firebase/firebaseSetup';
 
 export default function NewPost({ navigation }) {

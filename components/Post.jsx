@@ -1,11 +1,4 @@
-import {
-  View,
-  Image,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Button,
-} from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Card } from 'react-native-paper';
 

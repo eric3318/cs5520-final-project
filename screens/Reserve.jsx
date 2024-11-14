@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  TouchableOpacity,
-  Button,
   Alert,
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
 import {
-  getBookedTimeslots,
   addBookedTimeslot,
+  getBookedTimeslots,
 } from '../firebase/firestoreHelper';
 import { ALL_TIMESLOTS } from '../utils/constants';
 

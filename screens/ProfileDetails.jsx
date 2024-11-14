@@ -1,5 +1,5 @@
-import { View, Text, Alert, FlatList } from 'react-native';
-import { database, auth } from '../firebase/firebaseSetup';
+import { FlatList, View } from 'react-native';
+import { auth, database } from '../firebase/firebaseSetup';
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import Post from '../components/Post';

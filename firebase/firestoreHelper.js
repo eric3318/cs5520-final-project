@@ -2,12 +2,12 @@ import { database } from './firebaseSetup';
 
 import {
   addDoc,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
   getDoc,
   updateDoc,
-  arrayUnion,
 } from 'firebase/firestore';
 
 export async function writeToDB(data, collectionName, id = null) {

@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
   ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
 } from 'react-native';
 
 const CategoryCard = ({ name, image, onPress }) => (
