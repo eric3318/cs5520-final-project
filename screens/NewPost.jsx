@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { auth } from '../firebase/firebaseSetup';
 
 export default function NewPost({ navigation }) {
-  const [imageUri, setImageUri] = useState('../assets/icon.png');
+  const [imageUri, setImageUri] = useState('../assets/test-image.jpg');
   const [text, setText] = useState('');
   const { currentUser } = auth;
 

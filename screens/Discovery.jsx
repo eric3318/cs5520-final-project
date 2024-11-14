@@ -43,13 +43,23 @@ export default function Discovery({ navigation }) {
   }, [navigation]);
 
   return (
-    <View>
-      <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
+    <View style={styles.container}>
+      <FlatList
+        data={posts}
+        renderItem={({ item }) => <Post item={item} />}
+        contentContainerStyle={styles.flatList}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  flatList: {
+    rowGap: 12,
+  },
   newPostButton: {
     borderRadius: 12,
   },
