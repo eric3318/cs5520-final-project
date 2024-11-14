@@ -1,6 +1,16 @@
 **CS5520 Final Project**<br>
 Team members: Zhiyu Wu, Han Nie<br>
-Contributions<br>
+Data Model:<br>
+3 collections: Appointments, Posts, Trainer<br>
+**Appointments Fields**: userId, trainerId, trainerName, datetime<br>
+CRUD operations: Create an appointment, Read user's appiontments, delete (cancel) appointments<br>
+**Posts Fields**: userId, text, timestamp, likedBy, imageUri<br>
+CRUD operations: Create a post, Read user's posts or Read all posts<br>
+**Trainer Fields**: trainerId, name, focus, bookedTimeslots, availability, imageUri<br>
+CRUD operations: read trainer's information<br>
+
+
+**Contributions**<br>
 Zhiyu:<br>
 Zhiyu implemented the code for Appointment screen and Exercises screen. For Appointment screen, Zhiyu added cards for all trainers, showing their information and providing a "reserve" button. When the button is clicked, user would be directed to the Reserve screen developed by Zhiyu. In the Reserve screen, user can picked the available timeslots for the specific trainer in the calendar and made the appointment. Also, Zhiyu implemented filters in the Appointment screen.<br> 
 ![Screenshot 2024-11-13 231536](https://github.com/user-attachments/assets/e049bb9c-5765-4ba1-b429-554fe87bb8e4)
