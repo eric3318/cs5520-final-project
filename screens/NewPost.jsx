@@ -23,7 +23,7 @@ export default function NewPost({ navigation }) {
       text,
       imageUri,
       user: currentUser.uid,
-      likedBy: [currentUser.uid],
+      likedBy: [],
       timestamp: new Date().toISOString(),
     };
 
