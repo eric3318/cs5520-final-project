@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, FlatList } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import TrainerCard from '../components/TrainerCard';
 import { collection, getDocs } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
+import { getAllBookedTimeslots } from '../firebase/firestoreHelper';
+import { ALL_TIMESLOTS } from '../utils/constants';
+import moment from 'moment';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Appointment = ({ navigation }) => {
   const [trainers, setTrainers] = useState([]);
@@ -28,18 +32,40 @@ const Appointment = ({ navigation }) => {
     { label: 'Cardio', value: 'Cardio' },
   ];
 
-  useEffect(() => {
-    const fetchTrainers = async () => {
-      const trainerCollection = collection(database, 'Trainer');
-      const trainerSnapshot = await getDocs(trainerCollection);
-      const trainerList = trainerSnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setTrainers(trainerList);
-    };
-    fetchTrainers();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTrainers = async () => {
+        const trainerCollection = collection(database, 'Trainer');
+        const trainerSnapshot = await getDocs(trainerCollection);
+        const trainerList = await Promise.all(
+          trainerSnapshot.docs.map(async (doc) => {
+            const trainerData = doc.data();
+            const bookedTimeslots = await getAllBookedTimeslots(doc.id);
+            const availability = calculateAvailability(bookedTimeslots);
+            return {
+              id: doc.id,
+              ...trainerData,
+              availability,
+            };
+          })
+        );
+        setTrainers(trainerList);
+      };
+      fetchTrainers();
+    }, [])
+  );
+
+  const calculateAvailability = (bookedTimeslots) => {
+    const today = moment();
+    for (let i = 0; i < 30; i++) {
+      const date = today.clone().add(i, 'days').format('YYYY-MM-DD');
+      const bookedTimes = bookedTimeslots[date] || [];
+      if (bookedTimes.length < ALL_TIMESLOTS.length) {
+        return `${i} days`;
+      }
+    }
+    return 'No availability';
+  };
 
   const filteredTrainers = trainers.filter((trainer) => {
     const availabilityMatch =

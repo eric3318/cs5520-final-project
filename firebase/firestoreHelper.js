@@ -45,6 +45,20 @@ export async function getBookedTimeslots(trainerId, date) {
   }
 }
 
+export async function getAllBookedTimeslots(trainerId) {
+  try {
+    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerDoc = await getDoc(trainerRef);
+    if (trainerDoc.exists()) {
+      return trainerDoc.data().bookedTimeslots || {};
+    }
+    return {};
+  } catch (error) {
+    console.error('Error fetching all booked timeslots:', error);
+    return {};
+  }
+}
+
 export async function addBookedTimeslot(trainerId, date, time) {
   try {
     const trainerRef = doc(database, 'Trainer', trainerId);
