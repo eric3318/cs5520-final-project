@@ -8,6 +8,7 @@ import {
   getDoc,
   updateDoc,
   arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore';
 
 export async function writeToDB(data, collectionName, id = null) {
@@ -80,6 +81,22 @@ export async function addAppointment(user, trainerId, trainerName, datetime) {
     });
   } catch (error) {
     console.error('Error adding appointment:', error);
+  }
+}
+
+export async function cancelAppointment(appointmentId, trainerId, date, time) {
+  try {
+    const trainerRef = doc(database, 'Trainer', trainerId);
+
+    await updateDoc(trainerRef, {
+      [`bookedTimeslots.${date}`]: arrayRemove(time),
+    });
+
+    const appointmentRef = doc(database, 'Appointments', appointmentId);
+    await deleteDoc(appointmentRef);
+  } catch (error) {
+    console.error('Error cancelling appointment:', error);
+    throw error;
   }
 }
 
