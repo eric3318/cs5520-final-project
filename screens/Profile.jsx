@@ -6,7 +6,11 @@ import ProfileOption from '../components/ProfileOption';
 
 const LeftAvatar = () => <UserAvatar />;
 
-const Profile = () => {
+export default function Profile({ navigation }) {
+  const clickHandler = (option) => {
+    navigation.push('Profile Details', { option });
+  };
+
   return (
     <View style={styles.container}>
       <Card style={styles.profileCard}>
@@ -24,18 +28,22 @@ const Profile = () => {
         <ProfileOption
           icon="calendar"
           label="View Appointments"
-          onPress={() => {}}
+          onPress={() => clickHandler('Appointments')}
         />
-        <ProfileOption icon="post" label="My Posts" onPress={() => {}} />
+        <ProfileOption
+          icon="post"
+          label="My Posts"
+          onPress={() => clickHandler('Posts')}
+        />
         <ProfileOption
           icon="star"
           label="Favourited Posts"
-          onPress={() => {}}
+          onPress={() => clickHandler('Favourited Posts')}
         />
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -106,5 +114,3 @@ const styles = StyleSheet.create({
     color: '#333',
   },
 });
-
-export default Profile;

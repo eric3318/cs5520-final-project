@@ -3,10 +3,12 @@ import { writeToDB } from '../firebase/firestoreHelper';
 import { Button } from 'react-native-paper';
 import { useState } from 'react';
 import { TextInput } from 'react-native-paper';
+import { auth } from '../firebase/firebaseSetup';
 
 export default function NewPost({ navigation }) {
   const [imageUri, setImageUri] = useState('../assets/icon.png');
   const [text, setText] = useState('');
+  const { currentUser } = auth;
 
   // const imageHandler = (uri) => {
   //   setImageUri(uri);
@@ -21,8 +23,8 @@ export default function NewPost({ navigation }) {
     const post = {
       text,
       imageUri,
-      user: { id: 0, username: 'test', profileImage: '' },
-      likedBy: [0],
+      user: currentUser.uid,
+      likedBy: [currentUser.uid],
       timestamp: new Date().toISOString(),
     };
 

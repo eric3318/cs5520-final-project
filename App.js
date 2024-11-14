@@ -9,6 +9,7 @@ import NewPost from './screens/NewPost';
 import Reserve from './screens/Reserve';
 import { View } from 'react-native';
 import Auth from './screens/Auth';
+import ProfileDetails from './screens/ProfileDetails';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -83,6 +84,7 @@ export default function App() {
           }}
         />
         <Stack.Screen name="Auth" component={Auth} />
+        <Stack.Screen name="Profile Details" component={ProfileDetails} />
         <Stack.Screen
           name="Reserve"
           component={Reserve}
