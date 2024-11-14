@@ -16,8 +16,10 @@ import uuid from 'react-native-uuid';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { Button } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const trainers = [
   {
@@ -80,11 +82,7 @@ function Tabs() {
         options={{
           title: 'Discovery',
           tabBarIcon: () => (
-            <MaterialCommunityIcons
-              name="food-drumstick"
-              size={24}
-              color="black"
-            />
+            <FontAwesome6 name="user-group" size={16} color="black" />
           ),
         }}
       />
@@ -94,7 +92,11 @@ function Tabs() {
         options={{
           title: 'Train with Us Today',
           tabBarIcon: () => (
-            <FontAwesome5 name="running" size={24} color="black" />
+            <MaterialCommunityIcons
+              name="weight-lifter"
+              size={24}
+              color="black"
+            />
           ),
         }}
       />
@@ -113,9 +115,7 @@ function Tabs() {
         component={Profile}
         options={{
           title: 'Profile',
-          tabBarIcon: () => (
-            <FontAwesome5 name="running" size={24} color="black" />
-          ),
+          tabBarIcon: () => <FontAwesome name="user" size={24} color="black" />,
           headerRight: () => (
             <Button onPress={() => signOut(auth)}>
               <MaterialIcons name="logout" size={24} color="black" />
