@@ -11,7 +11,7 @@ const TrainerCard = ({
   navigation,
 }) => {
   const handlePress = () => {
-    navigation.navigate('Reserve', { trainerId: trainerId });
+    navigation.navigate('Reserve', { trainerId: trainerId, trainerName: name });
   };
   return (
     <Card style={styles.card}>

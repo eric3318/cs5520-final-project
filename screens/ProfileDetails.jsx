@@ -1,8 +1,9 @@
-import { FlatList, View } from 'react-native';
-import { auth, database } from '../firebase/firebaseSetup';
-import { useEffect, useState } from 'react';
+import { View, FlatList } from 'react-native';
+import { database, auth } from '../firebase/firebaseSetup';
+import { useEffect, useState, useCallback } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import Post from '../components/Post';
+import AppointmentCard from '../components/AppointmentCard';
 
 export default function ProfileDetails({ route }) {
   const { currentUser } = auth;
@@ -10,6 +11,20 @@ export default function ProfileDetails({ route }) {
   const [posts, setPosts] = useState([]);
   const [favouritedPosts, setFavouritedPosts] = useState([]);
   const [appointments, setAppointments] = useState([]);
+
+  const refreshAppointments = useCallback(() => {
+    const q = query(
+      collection(database, 'Appointments'),
+      where('user', '==', currentUser.uid)
+    );
+    onSnapshot(q, (querySnapshot) => {
+      const newAppointments = [];
+      querySnapshot.forEach((docSnapshot) => {
+        newAppointments.push({ ...docSnapshot.data(), id: docSnapshot.id });
+      });
+      setAppointments(newAppointments);
+    });
+  }, [currentUser]);
 
   useEffect(() => {
     onSnapshot(
@@ -55,7 +70,16 @@ export default function ProfileDetails({ route }) {
     return (
       <FlatList
         data={appointments}
-        renderItem={({ item }) => <Post item={item} />}
+        renderItem={({ item }) => (
+          <AppointmentCard
+            appointmentId={item.id}
+            trainerId={item.trainerId}
+            trainerName={item.trainerName}
+            datetime={item.datetime}
+            onCancel={refreshAppointments}
+          />
+        )}
+        keyExtractor={(item) => item.id}
       />
     );
   };
