@@ -70,6 +70,19 @@ export async function addBookedTimeslot(trainerId, date, time) {
   }
 }
 
+export async function addAppointment(user, trainerId, trainerName, datetime) {
+  try {
+    await addDoc(collection(database, 'Appointments'), {
+      user,
+      trainerId,
+      trainerName,
+      datetime,
+    });
+  } catch (error) {
+    console.error('Error adding appointment:', error);
+  }
+}
+
 // export async function deleteAllFromDB(collectionName) {
 //   try {
 //     const querySnapshot = await getDocs(collection(database, collectionName));

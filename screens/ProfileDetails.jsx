@@ -3,6 +3,7 @@ import { database, auth } from '../firebase/firebaseSetup';
 import { useEffect, useState } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import Post from '../components/Post';
+import AppointmentCard from '../components/AppointmentCard';
 
 export default function ProfileDetails({ route }) {
   const { currentUser } = auth;
@@ -55,7 +56,13 @@ export default function ProfileDetails({ route }) {
     return (
       <FlatList
         data={appointments}
-        renderItem={({ item }) => <Post item={item} />}
+        renderItem={({ item }) => (
+          <AppointmentCard
+            trainerName={item.trainerName}
+            datetime={item.datetime}
+          />
+        )}
+        keyExtractor={(item) => item.id}
       />
     );
   };

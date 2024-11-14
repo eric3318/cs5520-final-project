@@ -10,14 +10,16 @@ import {
 } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import moment from 'moment';
+import { auth } from '../firebase/firebaseSetup';
 import {
   getBookedTimeslots,
   addBookedTimeslot,
+  addAppointment,
 } from '../firebase/firestoreHelper';
 import { ALL_TIMESLOTS } from '../utils/constants';
 
 const Reserve = ({ route, navigation }) => {
-  const { trainerId } = route.params;
+  const { trainerId, trainerName } = route.params;
   const today = moment().format('YYYY-MM-DD');
 
   const [bookedTimes, setBookedTimes] = useState([]);
@@ -41,9 +43,16 @@ const Reserve = ({ route, navigation }) => {
       Alert.alert('Please select a time slot');
       return;
     }
+    const user = auth.currentUser?.uid;
+    if (!user) {
+      Alert.alert('User not authenticated');
+      return;
+    }
 
     try {
       await addBookedTimeslot(trainerId, selectedDate, selectedTime);
+      const datetime = `${selectedDate} ${selectedTime}`;
+      await addAppointment(user, trainerId, trainerName, datetime);
       Alert.alert('Appointment confirmed!');
       navigation.goBack();
     } catch (error) {
