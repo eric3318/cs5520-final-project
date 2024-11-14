@@ -8,6 +8,7 @@ import {
   getDoc,
   updateDoc,
   arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore';
 
 export async function writeToDB(data, collectionName, id = null) {
