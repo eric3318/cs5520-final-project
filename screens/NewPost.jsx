@@ -52,7 +52,7 @@ export default function NewPost({ navigation }) {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/icon.png')}
+        source={require('../assets/test-image.jpg')}
         style={{ width: '100%', height: 200 }}
       />
       <TextInput
