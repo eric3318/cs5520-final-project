@@ -25,6 +25,20 @@ Zhiyu also designed the UI for profile screen, and implemented the "View my appo
 
 ![Screenshot 2024-11-13 231716](https://github.com/user-attachments/assets/a45d191e-e7b2-4c55-bfc5-faf99bb1a704)
 
+Han:<br> 
+1. Built Auth screen and implemented user authentication functionalities including signup, login, and logout.
+![img_4.png](img_4.png)
+2. set up the firebase configuration and helper functions to perform CRUD operations on fireBase.
+3. created the Discovery screen and New Post screen and implemented functionalities such as like/unlike and post making.
+![img_1.png](img_1.png)
+4. Implemented the Profile Details Screen, which is used commonly by the three options to conditionally render corresponding data.
+![img_2.png](img_2.png)
+![img_3.png](img_3.png)
+
+
+
+
+
 
 
 
