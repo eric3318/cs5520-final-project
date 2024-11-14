@@ -14,10 +14,7 @@ export default function Discovery({ navigation }) {
 
   useEffect(() => {
     onSnapshot(
-      query(
-        collection(database, 'Posts')
-        // where("owner", "==", currentUser.uid),
-      ),
+      query(collection(database, 'Posts')),
       (querySnapshot) => {
         let newArray = [];
         querySnapshot.forEach((docSnapshot) => {
@@ -47,13 +44,6 @@ export default function Discovery({ navigation }) {
 
   return (
     <View>
-      <Button
-        onPress={() => {
-          navigation.push('Auth');
-        }}
-      >
-        Test Auth Screen
-      </Button>
       <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
     </View>
   );
