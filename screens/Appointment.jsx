@@ -1,44 +1,16 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import TrainerCard from '../components/TrainerCard';
-
-const trainers = [
-  {
-    id: '1',
-    name: 'Trainer 1',
-    focus: 'Strength',
-    availability: '3 days',
-    imageUri:
-      'https://img.freepik.com/free-photo/adult-pretty-woman-happy-expression-gym-fitness-teacher-concept-ai-generated_1194-588907.jpg?semt=ais_hybrid',
-  },
-  {
-    id: '2',
-    name: 'Trainer 2',
-    focus: 'Yoga',
-    availability: '5 days',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564785.jpg?semt=ais_hybrid',
-  },
-  {
-    id: '3',
-    name: 'Trainer 3',
-    focus: 'Pilates',
-    availability: '2 days',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564820.jpg?semt=ais_hybrid',
-  },
-  {
-    id: '4',
-    name: 'Trainer 4',
-    focus: 'Cardio',
-    availability: '1 day',
-    imageUri:
-      'https://img.freepik.com/free-photo/close-up-people-doing-yoga-indoors_23-2150848089.jpg?semt=ais_hybrid',
-  },
-];
+import { collection, getDocs } from 'firebase/firestore';
+import { database } from '../firebase/firebaseSetup';
+import { getAllBookedTimeslots } from '../firebase/firestoreHelper';
+import { ALL_TIMESLOTS } from '../utils/constants';
+import moment from 'moment';
+import { useFocusEffect } from '@react-navigation/native';
 
 const Appointment = ({ navigation }) => {
+  const [trainers, setTrainers] = useState([]);
   const [availabilityFilter, setAvailabilityFilter] = useState(null);
   const [focusFilter, setFocusFilter] = useState(null);
 
@@ -59,6 +31,41 @@ const Appointment = ({ navigation }) => {
     { label: 'Pilates', value: 'Pilates' },
     { label: 'Cardio', value: 'Cardio' },
   ];
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchTrainers = async () => {
+        const trainerCollection = collection(database, 'Trainer');
+        const trainerSnapshot = await getDocs(trainerCollection);
+        const trainerList = await Promise.all(
+          trainerSnapshot.docs.map(async (doc) => {
+            const trainerData = doc.data();
+            const bookedTimeslots = await getAllBookedTimeslots(doc.id);
+            const availability = calculateAvailability(bookedTimeslots);
+            return {
+              id: doc.id,
+              ...trainerData,
+              availability,
+            };
+          })
+        );
+        setTrainers(trainerList);
+      };
+      fetchTrainers();
+    }, [])
+  );
+
+  const calculateAvailability = (bookedTimeslots) => {
+    const today = moment();
+    for (let i = 0; i < 30; i++) {
+      const date = today.clone().add(i, 'days').format('YYYY-MM-DD');
+      const bookedTimes = bookedTimeslots[date] || [];
+      if (bookedTimes.length < ALL_TIMESLOTS.length) {
+        return `${i} days`;
+      }
+    }
+    return 'No availability';
+  };
 
   const filteredTrainers = trainers.filter((trainer) => {
     const availabilityMatch =
@@ -97,6 +104,7 @@ const Appointment = ({ navigation }) => {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TrainerCard
+            trainerId={item.id}
             name={item.name}
             focus={item.focus}
             availability={item.availability}

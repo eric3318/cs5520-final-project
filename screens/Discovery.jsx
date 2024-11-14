@@ -47,6 +47,13 @@ export default function Discovery({ navigation }) {
 
   return (
     <View>
+      <Button
+        onPress={() => {
+          navigation.push('Auth');
+        }}
+      >
+        Test Auth Screen
+      </Button>
       <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
     </View>
   );
