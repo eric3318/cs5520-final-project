@@ -2,16 +2,24 @@ import { Alert, Image, StyleSheet, View } from 'react-native';
 import { writeToDB } from '../firebase/firestoreHelper';
 import { Button, TextInput } from 'react-native-paper';
 import { useState } from 'react';
-import { auth } from '../firebase/firebaseSetup';
+import { auth, storage } from '../firebase/firebaseSetup';
+import ImageManager from '../components/ImageManager';
+import { newPostImageStyle } from '../utils/constants';
+import {
+  getDownloadURL,
+  ref,
+  uploadBytesResumable,
+  getMetadata,
+} from 'firebase/storage';
 
 export default function NewPost({ navigation }) {
-  const [imageUri, setImageUri] = useState('../assets/test-image.jpg');
+  const [imageUri, setImageUri] = useState('');
   const [text, setText] = useState('');
   const { currentUser } = auth;
 
-  // const imageHandler = (uri) => {
-  //   setImageUri(uri);
-  // };
+  const imageHandler = (uri) => {
+    setImageUri(uri);
+  };
 
   const postHandler = async () => {
     if (!text || !imageUri) {
@@ -19,11 +27,13 @@ export default function NewPost({ navigation }) {
       return;
     }
 
+    let uri = await uploadImage(imageUri);
+
     const post = {
       text,
-      imageUri,
+      imageUri: uri,
       user: currentUser.uid,
-      likedBy: [],
+      likedBy: [currentUser.uid],
       timestamp: new Date().toISOString(),
     };
 
@@ -36,36 +46,39 @@ export default function NewPost({ navigation }) {
     }
   };
 
-  // const uploadImage = async () => {
-  //   const response = await fetch(data.imageUri);
-  //   if (!response.ok) {
-  //     throw new Error(`Error happened with status ${response.status}`);
-  //   }
-  //   const blob = await response.blob();
-  //   const imageName = data.imageUri.substring(
-  //     data.imageUri.lastIndexOf('/') + 1
-  //   );
-  //   const imageRef = await ref(storage, `images/${imageName}`);
-  //   const uploadResult = await uploadBytesResumable(imageRef, blob);
-  // };
+  const uploadImage = async (imagePath) => {
+    const response = await fetch(imagePath);
+    if (!response.ok) {
+      throw new Error(`Error happened with status ${response.status}`);
+    }
+    const blob = await response.blob();
+    const imageName = imagePath.substring(imageUri.lastIndexOf('/') + 1);
+    const imageRef = await ref(storage, `images/${imageName}`);
+    await uploadBytesResumable(imageRef, blob);
+    const metaData = await getMetadata(imageRef);
+    return metaData.fullPath;
+  };
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require('../assets/test-image.jpg')}
-        style={{ width: '100%', height: 200 }}
-      />
-      <TextInput
-        label="Content"
-        mode="outlined"
-        value={text}
-        onChangeText={(text) => {
-          setText(text);
-        }}
-      />
-      <Button onPress={postHandler} mode="contained">
-        Make Post
-      </Button>
+      {imageUri ? (
+        <>
+          <Image source={{ uri: imageUri }} style={newPostImageStyle} />
+          <TextInput
+            label="Content"
+            mode="outlined"
+            value={text}
+            onChangeText={(text) => {
+              setText(text);
+            }}
+          />
+          <Button onPress={postHandler} mode="contained">
+            Make Post
+          </Button>
+        </>
+      ) : (
+        <ImageManager handleImage={imageHandler} />
+      )}
     </View>
   );
 }

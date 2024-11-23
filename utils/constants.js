@@ -8,3 +8,8 @@ export const ALL_TIMESLOTS = [
   '3:00 PM',
   '4:00 PM',
 ];
+
+export const newPostImageStyle = {
+  width: '100%',
+  height: 250,
+};
