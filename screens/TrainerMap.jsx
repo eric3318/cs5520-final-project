@@ -121,6 +121,7 @@ const TrainerMap = ({ navigation }) => {
                     navigation.navigate('Reserve', {
                       trainerId: selectedTrainer.id,
                       trainerName: selectedTrainer.name,
+                      returnTo: 'Appointment',
                     });
                     setSelectedTrainer(null);
                   }}
