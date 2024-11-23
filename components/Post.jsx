@@ -3,10 +3,13 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Button, Card } from 'react-native-paper';
 import { auth } from '../firebase/firebaseSetup';
 import { writeToDB } from '../firebase/firestoreHelper';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getDownloadURL, ref } from 'firebase/storage';
+import { storage } from '../firebase/firebaseSetup';
 
 export default function Post({ item }) {
   const { currentUser } = auth;
+  const [downloadUrl, setDownloadUrl] = useState('');
   const [liked, setLiked] = useState(item.likedBy.includes(currentUser.uid));
 
   const likeClickHandler = async () => {
@@ -23,6 +26,20 @@ export default function Post({ item }) {
     );
     setLiked(true);
   };
+
+  useEffect(() => {
+    (async () => {
+      if (item?.imageUri) {
+        try {
+          const reference = ref(storage, item.imageUri);
+          const url = await getDownloadURL(reference);
+          setDownloadUrl(url);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+    })();
+  }, []);
 
   return (
     <Card>
@@ -49,13 +66,15 @@ export default function Post({ item }) {
             <Text>{item.likedBy.length}</Text>
           </View>
         </View>
-        <View style={styles.contentSection}>
-          <Image
-            source={require('../assets/test-image.jpg')}
-            style={{ width: '100%', height: 200 }}
-          />
-          <Text>{item.text}</Text>
-        </View>
+        {downloadUrl && (
+          <View style={styles.contentSection}>
+            <Image
+              source={{ uri: downloadUrl }}
+              style={{ width: '100%', height: 200 }}
+            />
+            <Text>{item.text}</Text>
+          </View>
+        )}
       </Card.Content>
     </Card>
   );

@@ -22,66 +22,25 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-
-const trainers = [
-  {
-    name: 'Trainer 1',
-    focus: 'Strength',
-    imageUri:
-      'https://img.freepik.com/free-photo/adult-pretty-woman-happy-expression-gym-fitness-teacher-concept-ai-generated_1194-588907.jpg?semt=ais_hybrid',
-    latitude: 49.22728,
-    longitude: -123.000137,
-  },
-  {
-    name: 'Trainer 2',
-    focus: 'Yoga',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564785.jpg?semt=ais_hybrid',
-    latitude: 49.26633,
-    longitude: -123.00163,
-  },
-  {
-    name: 'Trainer 3',
-    focus: 'Pilates',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564820.jpg?semt=ais_hybrid',
-    latitude: 49.285616,
-    longitude: -123.120157,
-  },
-  {
-    name: 'Trainer 4',
-    focus: 'Cardio',
-    imageUri:
-      'https://img.freepik.com/free-photo/close-up-people-doing-yoga-indoors_23-2150848089.jpg?semt=ais_hybrid',
-    latitude: 49.284832194,
-    longitude: -123.106999572,
-  },
-];
-
-async function initializeTrainers() {
-  const setupDocRef = doc(database, 'AppSetup', 'setupComplete');
-  const setupDocSnap = await getDoc(setupDocRef);
-
-  if (setupDocSnap.exists()) {
-    return;
-  }
-
-  const trainerCollection = collection(database, 'Trainer');
-
-  for (const trainer of trainers) {
-    const trainerId = uuid.v4();
-    await setDoc(doc(trainerCollection, trainerId), {
-      ...trainer,
-      trainerId,
-      bookedTimeslots: {},
-    });
-  }
-
-  await setDoc(setupDocRef, { initialized: true });
-}
+import { useAuth } from './hook/useAuth';
+import { AuthProvider } from './context/authContext';
+import Loading from './components/Loading';
+import { initializeTrainers } from './utils/helpers';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+export default function App() {
+  useEffect(() => {
+    initializeTrainers();
+  }, []);
+
+  return (
+    <AuthProvider>
+      <Navigation />
+    </AuthProvider>
+  );
+}
 
 function Tabs() {
   return (
@@ -137,23 +96,17 @@ function Tabs() {
   );
 }
 
-export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+function Navigation() {
+  const [authenticated, currentUser] = useAuth();
 
-  useEffect(() => {
-    initializeTrainers();
-  }, []);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      user ? setLoggedIn(true) : setLoggedIn(false);
-    });
-  }, []);
+  if (!currentUser) {
+    return <Loading />;
+  }
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {loggedIn ? (
+        {authenticated ? (
           <>
             <Stack.Screen
               name="Tabs"
