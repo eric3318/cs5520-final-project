@@ -31,18 +31,14 @@ export default function Discovery({ navigation }) {
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button
-          onPress={postButtonClickHandler}
-          mode="outlined"
-          style={styles.newPostButton}
-        >
-          New Post
-        </Button>
+        <Button onPress={postButtonClickHandler}>New Post</Button>
       ),
     });
   }, [navigation]);
 
   return (
+    <View>
+      <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
     <View style={styles.container}>
       <FlatList
         data={posts}
@@ -59,8 +55,5 @@ const styles = StyleSheet.create({
   },
   flatList: {
     rowGap: 12,
-  },
-  newPostButton: {
-    borderRadius: 12,
   },
 });
