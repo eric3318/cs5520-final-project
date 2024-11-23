@@ -104,26 +104,33 @@ const TrainerMap = ({ navigation }) => {
       </MapView>
 
       {selectedTrainer && (
-        <Modal transparent={true} animationType="slide">
+        <Modal
+          visible={true}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setSelectedTrainer(null)}
+        >
           <View style={styles.modalContainer}>
-            <Text style={styles.modalTitle}>{selectedTrainer.name}</Text>
-            <Text>Focus: {selectedTrainer.focus}</Text>
-            <View style={styles.buttonContainer}>
-              <Button
-                title="Reserve"
-                onPress={() => {
-                  navigation.navigate('Reserve', {
-                    trainerId: selectedTrainer.id,
-                    trainerName: selectedTrainer.name,
-                  });
-                  setSelectedTrainer(null);
-                }}
-              />
-              <Button
-                title="Cancel"
-                onPress={() => setSelectedTrainer(null)}
-                color="gray"
-              />
+            <View style={styles.popUp}>
+              <Text style={styles.modalTitle}>{selectedTrainer.name}</Text>
+              <Text>Focus: {selectedTrainer.focus}</Text>
+              <View style={styles.buttonContainer}>
+                <Button
+                  title="Reserve"
+                  onPress={() => {
+                    navigation.navigate('Reserve', {
+                      trainerId: selectedTrainer.id,
+                      trainerName: selectedTrainer.name,
+                    });
+                    setSelectedTrainer(null);
+                  }}
+                />
+                <Button
+                  title="Cancel"
+                  onPress={() => setSelectedTrainer(null)}
+                  color="gray"
+                />
+              </View>
             </View>
           </View>
         </Modal>
@@ -139,8 +146,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 20,
+  },
+  popUp: {
+    width: '80%',
+    padding: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 5,
   },
   modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
   buttonContainer: {
