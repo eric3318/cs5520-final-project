@@ -97,9 +97,9 @@ function Tabs() {
 }
 
 function Navigation() {
-  const [authenticated, currentUser] = useAuth();
+  const [authenticated] = useAuth();
 
-  if (!currentUser) {
+  if (authenticated === null) {
     return <Loading />;
   }
 
