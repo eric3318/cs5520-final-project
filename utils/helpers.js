@@ -1,6 +1,7 @@
 import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
 import uuid from 'react-native-uuid';
+import { trainers } from './constants';
 
 export async function initializeTrainers() {
   const setupDocRef = doc(database, 'AppSetup', 'setupComplete');

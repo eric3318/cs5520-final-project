@@ -15,24 +15,32 @@ export const trainers = [
     focus: 'Strength',
     imageUri:
       'https://img.freepik.com/free-photo/adult-pretty-woman-happy-expression-gym-fitness-teacher-concept-ai-generated_1194-588907.jpg?semt=ais_hybrid',
+    latitude: 49.22728,
+    longitude: -123.000137,
   },
   {
     name: 'Trainer 2',
     focus: 'Yoga',
     imageUri:
       'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564785.jpg?semt=ais_hybrid',
+    latitude: 49.26633,
+    longitude: -123.00163,
   },
   {
     name: 'Trainer 3',
     focus: 'Pilates',
     imageUri:
       'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564820.jpg?semt=ais_hybrid',
+    latitude: 49.26633,
+    longitude: -123.00163,
   },
   {
     name: 'Trainer 4',
     focus: 'Cardio',
     imageUri:
       'https://img.freepik.com/free-photo/close-up-people-doing-yoga-indoors_23-2150848089.jpg?semt=ais_hybrid',
+    latitude: 49.284832194,
+    longitude: -123.106999572,
   },
 ];
 
