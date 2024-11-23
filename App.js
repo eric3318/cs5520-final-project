@@ -23,58 +23,22 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useAuth } from './hook/useAuth';
 import { AuthProvider } from './context/authContext';
 import Loading from './components/Loading';
-
-const trainers = [
-  {
-    name: 'Trainer 1',
-    focus: 'Strength',
-    imageUri:
-      'https://img.freepik.com/free-photo/adult-pretty-woman-happy-expression-gym-fitness-teacher-concept-ai-generated_1194-588907.jpg?semt=ais_hybrid',
-  },
-  {
-    name: 'Trainer 2',
-    focus: 'Yoga',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564785.jpg?semt=ais_hybrid',
-  },
-  {
-    name: 'Trainer 3',
-    focus: 'Pilates',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564820.jpg?semt=ais_hybrid',
-  },
-  {
-    name: 'Trainer 4',
-    focus: 'Cardio',
-    imageUri:
-      'https://img.freepik.com/free-photo/close-up-people-doing-yoga-indoors_23-2150848089.jpg?semt=ais_hybrid',
-  },
-];
-
-async function initializeTrainers() {
-  const setupDocRef = doc(database, 'AppSetup', 'setupComplete');
-  const setupDocSnap = await getDoc(setupDocRef);
-
-  if (setupDocSnap.exists()) {
-    return;
-  }
-
-  const trainerCollection = collection(database, 'Trainer');
-
-  for (const trainer of trainers) {
-    const trainerId = uuid.v4();
-    await setDoc(doc(trainerCollection, trainerId), {
-      ...trainer,
-      trainerId,
-      bookedTimeslots: {},
-    });
-  }
-
-  await setDoc(setupDocRef, { initialized: true });
-}
+import { initializeTrainers } from './utils/helpers';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+export default function App() {
+  useEffect(() => {
+    initializeTrainers();
+  }, []);
+
+  return (
+    <AuthProvider>
+      <Navigation />
+    </AuthProvider>
+  );
+}
 
 function Tabs() {
   return (
@@ -170,17 +134,5 @@ function Navigation() {
         )}
       </Stack.Navigator>
     </NavigationContainer>
-  );
-}
-
-export default function App() {
-  useEffect(() => {
-    initializeTrainers();
-  }, []);
-
-  return (
-    <AuthProvider>
-      <Navigation />
-    </AuthProvider>
   );
 }
