@@ -8,6 +8,7 @@ import { getAllBookedTimeslots } from '../firebase/firestoreHelper';
 import { ALL_TIMESLOTS } from '../utils/constants';
 import moment from 'moment';
 import { useFocusEffect } from '@react-navigation/native';
+import { Card, Title } from 'react-native-paper';
 
 const Appointment = ({ navigation }) => {
   const [trainers, setTrainers] = useState([]);
@@ -76,6 +77,14 @@ const Appointment = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Card
+        style={styles.card}
+        onPress={() => navigation.navigate('TrainerMap')}
+      >
+        <Card.Content>
+          <Title style={styles.cardTitle}>Locate Nearby Trainers</Title>
+        </Card.Content>
+      </Card>
       <View style={styles.filterContainer}>
         <DropDownPicker
           open={availabilityOpen}
@@ -123,6 +132,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
+  },
+  card: {
+    marginBottom: 16,
+    borderRadius: 8,
+    elevation: 2,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#007bff',
   },
   header: {
     fontSize: 24,
