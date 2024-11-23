@@ -39,12 +39,13 @@ export default function Discovery({ navigation }) {
   return (
     <View>
       <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
-    <View style={styles.container}>
-      <FlatList
-        data={posts}
-        renderItem={({ item }) => <Post item={item} />}
-        contentContainerStyle={styles.flatList}
-      />
+      <View style={styles.container}>
+        <FlatList
+          data={posts}
+          renderItem={({ item }) => <Post item={item} />}
+          contentContainerStyle={styles.flatList}
+        />
+      </View>
     </View>
   );
 }
