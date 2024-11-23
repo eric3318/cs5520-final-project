@@ -20,6 +20,9 @@ import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useAuth } from './hook/useAuth';
+import { AuthProvider } from './context/authContext';
+import Loading from './components/Loading';
 
 const trainers = [
   {
@@ -127,23 +130,17 @@ function Tabs() {
   );
 }
 
-export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+function Navigation() {
+  const [authenticated, currentUser] = useAuth();
 
-  useEffect(() => {
-    initializeTrainers();
-  }, []);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      user ? setLoggedIn(true) : setLoggedIn(false);
-    });
-  }, []);
+  if (!currentUser) {
+    return <Loading />;
+  }
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {loggedIn ? (
+        {authenticated ? (
           <>
             <Stack.Screen
               name="Tabs"
@@ -173,5 +170,17 @@ export default function App() {
         )}
       </Stack.Navigator>
     </NavigationContainer>
+  );
+}
+
+export default function App() {
+  useEffect(() => {
+    initializeTrainers();
+  }, []);
+
+  return (
+    <AuthProvider>
+      <Navigation />
+    </AuthProvider>
   );
 }
