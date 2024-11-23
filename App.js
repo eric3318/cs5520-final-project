@@ -9,11 +9,9 @@ import NewPost from './screens/NewPost';
 import Reserve from './screens/Reserve';
 import Auth from './screens/Auth';
 import ProfileDetails from './screens/ProfileDetails';
-import React, { useEffect, useState } from 'react';
-import { auth, database } from './firebase/firebaseSetup';
-import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
-import uuid from 'react-native-uuid';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import React, { useEffect } from 'react';
+import { auth } from './firebase/firebaseSetup';
+import { signOut } from 'firebase/auth';
 import { Button } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
@@ -24,6 +22,13 @@ import { useAuth } from './hook/useAuth';
 import { AuthProvider } from './context/authContext';
 import Loading from './components/Loading';
 import { initializeTrainers } from './utils/helpers';
+import * as Notifications from 'expo-notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return { shouldShowAlert: true };
+  },
+});
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

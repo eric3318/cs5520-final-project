@@ -4,13 +4,15 @@ import { useEffect, useState, useCallback } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import Post from '../components/Post';
 import AppointmentCard from '../components/AppointmentCard';
+import NotificationManager from '../components/NotificationManager';
 
 export default function ProfileDetails({ route }) {
   const { currentUser } = auth;
   const { option } = route.params;
   const [posts, setPosts] = useState([]);
-  const [favouritedPosts, setFavouritedPosts] = useState([]);
+  const [likedPosts, setLikedPosts] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  const [showNotifier, setShowNotifier] = useState(null);
 
   const refreshAppointments = useCallback(() => {
     const q = query(
@@ -33,7 +35,7 @@ export default function ProfileDetails({ route }) {
           database,
           option === 'Appointments' ? 'Appointments' : 'Posts'
         ),
-        option !== 'Favourited Posts'
+        option !== 'Liked Posts'
           ? where('user', '==', currentUser.uid)
           : where('likedBy', 'array-contains', currentUser.uid)
       ),
@@ -49,8 +51,8 @@ export default function ProfileDetails({ route }) {
           case 'Posts':
             setPosts(newArray);
             break;
-          case 'Favourited Posts':
-            setFavouritedPosts(newArray);
+          case 'Liked Posts':
+            setLikedPosts(newArray);
             break;
         }
       },
@@ -59,6 +61,20 @@ export default function ProfileDetails({ route }) {
       }
     );
   }, []);
+
+  useEffect(() => {
+    console.log(showNotifier);
+  }, [showNotifier]);
+
+  const toggleNotifier = (appointmentId) => {
+    setShowNotifier((prev) =>
+      prev === null
+        ? appointmentId
+        : prev === appointmentId
+          ? null
+          : appointmentId
+    );
+  };
 
   const renderMyPosts = () => {
     return (
@@ -71,23 +87,27 @@ export default function ProfileDetails({ route }) {
       <FlatList
         data={appointments}
         renderItem={({ item }) => (
-          <AppointmentCard
-            appointmentId={item.id}
-            trainerId={item.trainerId}
-            trainerName={item.trainerName}
-            datetime={item.datetime}
-            onCancel={refreshAppointments}
-          />
+          <>
+            <AppointmentCard
+              appointmentId={item.id}
+              trainerId={item.trainerId}
+              trainerName={item.trainerName}
+              datetime={item.datetime}
+              onNotify={toggleNotifier}
+              onCancel={refreshAppointments}
+            />
+            {showNotifier === item.id && <NotificationManager />}
+          </>
         )}
         keyExtractor={(item) => item.id}
       />
     );
   };
 
-  const renderFavouritedPosts = () => {
+  const renderLikedPosts = () => {
     return (
       <FlatList
-        data={favouritedPosts}
+        data={likedPosts}
         renderItem={({ item }) => <Post item={item} />}
       />
     );
@@ -99,7 +119,7 @@ export default function ProfileDetails({ route }) {
         ? renderMyAppointments()
         : option === 'Posts'
           ? renderMyPosts()
-          : renderFavouritedPosts()}
+          : renderLikedPosts()}
     </View>
   );
 }

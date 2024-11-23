@@ -1,12 +1,13 @@
-import React from 'react';
-import { View, Text, StyleSheet, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, Alert } from 'react-native';
 import { cancelAppointment } from '../firebase/firestoreHelper';
+import { Button } from 'react-native-paper';
 
 const AppointmentCard = ({
   appointmentId,
   trainerId,
   trainerName,
   datetime,
+  onNotify,
   onCancel,
 }) => {
   const handleCancel = async () => {
@@ -21,17 +22,32 @@ const AppointmentCard = ({
       Alert.alert('Could not cancel the appointment. Please try again.');
     }
   };
+
+  const notifyButtonClickHandler = () => {
+    onNotify(appointmentId);
+  };
+
   return (
     <View style={styles.card}>
-      <Text style={styles.trainerName}>Trainer: {trainerName}</Text>
-      <Text style={styles.datetime}>Date & Time: {datetime}</Text>
-      <Button title="Cancel" onPress={handleCancel} color="red" />
+      <View>
+        <Text style={styles.trainerName}>With: {trainerName}</Text>
+        <Text style={styles.datetime}>Time: {datetime}</Text>
+      </View>
+      <View>
+        <Button onPress={notifyButtonClickHandler}>Notify</Button>
+        <Button onPress={handleCancel} textColor="red">
+          Cancel
+        </Button>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 10,
     marginVertical: 8,
     marginHorizontal: 16,
