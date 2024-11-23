@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Button, Card, Avatar } from 'react-native-paper';
+import { StyleSheet, Text, View } from 'react-native';
+import { Avatar, Button, Card } from 'react-native-paper';
 
 const TrainerCard = ({
   trainerId,

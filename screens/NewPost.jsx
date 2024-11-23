@@ -1,12 +1,11 @@
-import { Alert, StyleSheet, View, Image } from 'react-native';
+import { Alert, Image, StyleSheet, View } from 'react-native';
 import { writeToDB } from '../firebase/firestoreHelper';
-import { Button } from 'react-native-paper';
+import { Button, TextInput } from 'react-native-paper';
 import { useState } from 'react';
-import { TextInput } from 'react-native-paper';
 import { auth } from '../firebase/firebaseSetup';
 
 export default function NewPost({ navigation }) {
-  const [imageUri, setImageUri] = useState('../assets/icon.png');
+  const [imageUri, setImageUri] = useState('../assets/test-image.jpg');
   const [text, setText] = useState('');
   const { currentUser } = auth;
 
@@ -24,7 +23,7 @@ export default function NewPost({ navigation }) {
       text,
       imageUri,
       user: currentUser.uid,
-      likedBy: [currentUser.uid],
+      likedBy: [],
       timestamp: new Date().toISOString(),
     };
 
@@ -53,7 +52,7 @@ export default function NewPost({ navigation }) {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/icon.png')}
+        source={require('../assets/test-image.jpg')}
         style={{ width: '100%', height: 200 }}
       />
       <TextInput

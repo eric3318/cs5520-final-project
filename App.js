@@ -7,13 +7,19 @@ import Exercise from './screens/Exercise';
 import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
 import Reserve from './screens/Reserve';
-import { View } from 'react-native';
 import Auth from './screens/Auth';
 import ProfileDetails from './screens/ProfileDetails';
-import React, { useEffect } from 'react';
-import { database } from './firebase/firebaseSetup';
-import { doc, getDoc, setDoc, collection } from 'firebase/firestore';
+import React, { useEffect, useState } from 'react';
+import { auth, database } from './firebase/firebaseSetup';
+import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
 import uuid from 'react-native-uuid';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { Button } from 'react-native-paper';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
+import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
 
 const trainers = [
   {
@@ -75,13 +81,9 @@ function Tabs() {
         component={Discovery}
         options={{
           title: 'Discovery',
-          // tabBarIcon: () => (
-          //   <MaterialCommunityIcons
-          //     name="food-drumstick"
-          //     size={24}
-          //     color="black"
-          //   />
-          // ),
+          tabBarIcon: () => (
+            <FontAwesome6 name="user-group" size={16} color="black" />
+          ),
         }}
       />
       <Tab.Screen
@@ -89,9 +91,13 @@ function Tabs() {
         component={Appointment}
         options={{
           title: 'Train with Us Today',
-          // tabBarIcon: () => (
-          //   <FontAwesome5 name="running" size={24} color="black" />
-          // ),
+          tabBarIcon: () => (
+            <MaterialCommunityIcons
+              name="weight-lifter"
+              size={24}
+              color="black"
+            />
+          ),
         }}
       />
       <Tab.Screen
@@ -99,9 +105,9 @@ function Tabs() {
         component={Exercise}
         options={{
           title: 'Exercise',
-          // tabBarIcon: () => (
-          //   <FontAwesome5 name="running" size={24} color="black" />
-          // ),
+          tabBarIcon: () => (
+            <FontAwesome5 name="running" size={24} color="black" />
+          ),
         }}
       />
       <Tab.Screen
@@ -109,9 +115,12 @@ function Tabs() {
         component={Profile}
         options={{
           title: 'Profile',
-          // tabBarIcon: () => (
-          //   <FontAwesome5 name="running" size={24} color="black" />
-          // ),
+          tabBarIcon: () => <FontAwesome name="user" size={24} color="black" />,
+          headerRight: () => (
+            <Button onPress={() => signOut(auth)}>
+              <MaterialIcons name="logout" size={24} color="black" />
+            </Button>
+          ),
         }}
       />
     </Tab.Navigator>
@@ -119,36 +128,49 @@ function Tabs() {
 }
 
 export default function App() {
+  const [loggedIn, setLoggedIn] = useState(false);
+
   useEffect(() => {
     initializeTrainers();
+  }, []);
+
+  useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      user ? setLoggedIn(true) : setLoggedIn(false);
+    });
   }, []);
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        <Stack.Screen
-          name="Tabs"
-          component={Tabs}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="New Post"
-          component={NewPost}
-          options={{
-            title: 'Make New Post',
-          }}
-        />
-        <Stack.Screen name="Auth" component={Auth} />
-        <Stack.Screen name="Profile Details" component={ProfileDetails} />
-        <Stack.Screen
-          name="Reserve"
-          component={Reserve}
-          options={{
-            title: 'Select a Date & Time',
-          }}
-        />
+        {loggedIn ? (
+          <>
+            <Stack.Screen
+              name="Tabs"
+              component={Tabs}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="New Post"
+              component={NewPost}
+              options={{
+                title: 'Make New Post',
+              }}
+            />
+            <Stack.Screen name="Profile Details" component={ProfileDetails} />
+            <Stack.Screen
+              name="Reserve"
+              component={Reserve}
+              options={{
+                title: 'Select a Date & Time',
+              }}
+            />
+          </>
+        ) : (
+          <Stack.Screen name="Auth" component={Auth} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

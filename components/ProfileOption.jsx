@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { IconButton } from "react-native-paper";
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { IconButton } from 'react-native-paper';
 
 const ProfileOption = ({ icon, label, onPress }) => (
   <TouchableOpacity onPress={onPress} style={styles.optionCard}>
@@ -14,20 +14,20 @@ const ProfileOption = ({ icon, label, onPress }) => (
 
 const styles = StyleSheet.create({
   optionCard: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderBottomWidth: 1,
-    borderBottomColor: "#f0f0f0",
+    borderBottomColor: '#f0f0f0',
   },
   optionContent: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 16,
     paddingHorizontal: 12,
   },
   optionText: {
     flex: 1,
     fontSize: 16,
-    color: "#333",
+    color: '#333',
   },
 });
 

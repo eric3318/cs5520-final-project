@@ -1,15 +1,29 @@
-import {
-  View,
-  Image,
-  Text,
-  StyleSheet,
-  Dimensions,
-  Button,
-} from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Card } from 'react-native-paper';
+import { Button, Card } from 'react-native-paper';
+import { auth } from '../firebase/firebaseSetup';
+import { writeToDB } from '../firebase/firestoreHelper';
+import { useState } from 'react';
 
 export default function Post({ item }) {
+  const { currentUser } = auth;
+  const [liked, setLiked] = useState(item.likedBy.includes(currentUser.uid));
+
+  const likeClickHandler = async () => {
+    if (item.likedBy.includes(currentUser.uid)) {
+      let newLikedArr = item.likedBy.filter((uid) => uid !== currentUser.uid);
+      await writeToDB({ ...item, likedBy: newLikedArr }, 'Posts', item.id);
+      setLiked(false);
+      return;
+    }
+    await writeToDB(
+      { ...item, likedBy: [...item.likedBy, currentUser.uid] },
+      'Posts',
+      item.id
+    );
+    setLiked(true);
+  };
+
   return (
     <Card>
       <Card.Content style={styles.cardContent}>
@@ -21,17 +35,23 @@ export default function Post({ item }) {
             />
             <View>
               <Text>{item.timestamp}</Text>
-              <Text>{item.user.username}</Text>
+              <Text>username</Text>
             </View>
           </View>
           <View style={styles.like}>
-            <FontAwesome name="heart-o" size={18} color="black" />
+            <Button onPress={likeClickHandler}>
+              {liked ? (
+                <FontAwesome name="heart-o" size={18} color="red" />
+              ) : (
+                <FontAwesome name="heart-o" size={18} color="black" />
+              )}
+            </Button>
             <Text>{item.likedBy.length}</Text>
           </View>
         </View>
         <View style={styles.contentSection}>
           <Image
-            source={require('../assets/icon.png')}
+            source={require('../assets/test-image.jpg')}
             style={{ width: '100%', height: 200 }}
           />
           <Text>{item.text}</Text>

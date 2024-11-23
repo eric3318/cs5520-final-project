@@ -1,9 +1,11 @@
-import { StyleSheet, View, Text, Alert } from 'react-native';
-import { TextInput, Button } from 'react-native-paper';
+import { Alert, StyleSheet, Text, View } from 'react-native';
+import { Button, TextInput } from 'react-native-paper';
 import { useState } from 'react';
 import { auth } from '../firebase/firebaseSetup';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 
 const SIGNUP = 'Sign Up';
 const LOGIN = 'Log In';
@@ -96,8 +98,17 @@ export default function Auth({ navigation }) {
           {mode}
         </Button>
         <View style={styles.prompt}>
-          <Text>Already have an account?</Text>
-          <Button onPress={changeMode}>Log in</Button>
+          {mode === SIGNUP ? (
+            <>
+              <Text>Already have an account?</Text>
+              <Button onPress={changeMode}>Log in</Button>
+            </>
+          ) : (
+            <>
+              <Text>New to the app?</Text>
+              <Button onPress={changeMode}>Sign Up</Button>
+            </>
+          )}
         </View>
       </View>
     </View>

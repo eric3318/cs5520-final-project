@@ -1,7 +1,7 @@
-import { Alert, FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Button } from 'react-native-paper';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, onSnapshot, query } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
 import Post from '../components/Post';
 
@@ -14,10 +14,7 @@ export default function Discovery({ navigation }) {
 
   useEffect(() => {
     onSnapshot(
-      query(
-        collection(database, 'Posts')
-        // where("owner", "==", currentUser.uid),
-      ),
+      query(collection(database, 'Posts')),
       (querySnapshot) => {
         let newArray = [];
         querySnapshot.forEach((docSnapshot) => {
@@ -46,20 +43,23 @@ export default function Discovery({ navigation }) {
   }, [navigation]);
 
   return (
-    <View>
-      <Button
-        onPress={() => {
-          navigation.push('Auth');
-        }}
-      >
-        Test Auth Screen
-      </Button>
-      <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
+    <View style={styles.container}>
+      <FlatList
+        data={posts}
+        renderItem={({ item }) => <Post item={item} />}
+        contentContainerStyle={styles.flatList}
+      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  flatList: {
+    rowGap: 12,
+  },
   newPostButton: {
     borderRadius: 12,
   },
