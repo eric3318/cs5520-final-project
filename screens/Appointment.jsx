@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import TrainerCard from '../components/TrainerCard';
@@ -14,6 +14,7 @@ const Appointment = ({ navigation }) => {
   const [trainers, setTrainers] = useState([]);
   const [availabilityFilter, setAvailabilityFilter] = useState(null);
   const [focusFilter, setFocusFilter] = useState(null);
+  const [filteredTrainers, setFilteredTrainers] = useState([]);
 
   const [availabilityOpen, setAvailabilityOpen] = useState(false);
   const [focusOpen, setFocusOpen] = useState(false);
@@ -51,6 +52,7 @@ const Appointment = ({ navigation }) => {
           })
         );
         setTrainers(trainerList);
+        setFilteredTrainers(trainerList);
       };
       fetchTrainers();
     }, [])
@@ -58,22 +60,27 @@ const Appointment = ({ navigation }) => {
 
   const calculateAvailability = (bookedTimeslots) => {
     const today = moment();
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 10; i++) {
       const date = today.clone().add(i, 'days').format('YYYY-MM-DD');
       const bookedTimes = bookedTimeslots[date] || [];
       if (bookedTimes.length < ALL_TIMESLOTS.length) {
-        return `${i} days`;
+        return i;
       }
     }
-    return 'No availability';
+    return -1;
   };
 
-  const filteredTrainers = trainers.filter((trainer) => {
-    const availabilityMatch =
-      !availabilityFilter || trainer.availability === availabilityFilter;
-    const focusMatch = !focusFilter || trainer.focus === focusFilter;
-    return availabilityMatch && focusMatch;
-  });
+  useEffect(() => {
+    const filtered = trainers.filter((trainer) => {
+      const availabilityMatch =
+        !availabilityFilter ||
+        (trainer.availability >= 0 &&
+          trainer.availability <= parseInt(availabilityFilter.charAt(0)));
+      const focusMatch = !focusFilter || trainer.focus === focusFilter;
+      return availabilityMatch && focusMatch;
+    });
+    setFilteredTrainers(filtered);
+  }, [availabilityFilter, focusFilter]);
 
   return (
     <View style={styles.container}>

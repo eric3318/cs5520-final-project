@@ -30,7 +30,7 @@ const TrainerCard = ({
         </View>
         <View style={styles.availabilityContainer}>
           <Text style={styles.availability}>
-            Available within {availability}
+            {`${availability >= 0 ? `Available ${availability === 0 ? 'today' : `in ${availability} day`}` : 'Not available'}`}
           </Text>
           <Button
             mode="contained"
