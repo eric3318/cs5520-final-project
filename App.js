@@ -7,6 +7,8 @@ import Exercise from './screens/Exercise';
 import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
 import Reserve from './screens/Reserve';
+import TrainerMap from './screens/TrainerMap';
+import { View } from 'react-native';
 import Auth from './screens/Auth';
 import ProfileDetails from './screens/ProfileDetails';
 import React, { useEffect } from 'react';
@@ -132,6 +134,11 @@ function Navigation() {
               options={{
                 title: 'Select a Date & Time',
               }}
+            />
+            <Stack.Screen
+              name="TrainerMap"
+              component={TrainerMap}
+              options={{ title: 'Find Trainers' }}
             />
           </>
         ) : (
