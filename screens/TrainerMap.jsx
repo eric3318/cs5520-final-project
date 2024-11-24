@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -7,8 +7,10 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
+import ClusteredMapView from 'react-native-map-clustering';
 import * as Location from 'expo-location';
 import { collection, getDocs } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
@@ -20,6 +22,7 @@ const TrainerMap = ({ navigation }) => {
   const [permissionResponse, requestPermission] =
     Location.useForegroundPermissions();
   const [loading, setLoading] = useState(true);
+  const mapRef = useRef(null);
 
   useEffect(() => {
     const fetchTrainers = async () => {
@@ -51,12 +54,20 @@ const TrainerMap = ({ navigation }) => {
         }
 
         const locationResponse = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
+          accuracy: Location.Accuracy.Balanced,
         });
-        setUserLocation({
+        const userLoc = {
           latitude: locationResponse.coords.latitude,
           longitude: locationResponse.coords.longitude,
-        });
+        };
+        setUserLocation(userLoc);
+        if (mapRef.current) {
+          mapRef.current.animateToRegion({
+            ...userLoc,
+            latitudeDelta: 0.05,
+            longitudeDelta: 0.05,
+          });
+        }
       } catch (err) {
         console.error('Error getting location permission:', err);
       } finally {
@@ -78,7 +89,8 @@ const TrainerMap = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <MapView
+      <ClusteredMapView
+        ref={mapRef}
         style={styles.map}
         region={{
           latitude: userLocation ? userLocation.latitude : 37.78825,
@@ -86,9 +98,18 @@ const TrainerMap = ({ navigation }) => {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
+        clusterColor="#007bff"
       >
         {userLocation && (
-          <Marker coordinate={userLocation} title="You" pinColor="blue" />
+          <Marker coordinate={userLocation} title="You">
+            {/* Custom user marker */}
+            <Image
+              source={{
+                uri: 'https://cdn.iconscout.com/icon/premium/png-512-thumb/user-marker-4683301-3912247.png?f=webp&w=512',
+              }}
+              style={styles.userMarker}
+            />
+          </Marker>
         )}
         {trainers.map((trainer) => (
           <Marker
@@ -101,7 +122,7 @@ const TrainerMap = ({ navigation }) => {
             onPress={() => setSelectedTrainer(trainer)}
           />
         ))}
-      </MapView>
+      </ClusteredMapView>
 
       {selectedTrainer && (
         <Modal
@@ -143,6 +164,10 @@ const TrainerMap = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   map: { flex: 1 },
+  userMarker: {
+    width: 60,
+    height: 60,
+  },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
