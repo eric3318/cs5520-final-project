@@ -101,11 +101,11 @@ const TrainerMap = ({ navigation }) => {
         clusterColor="#007bff"
       >
         {userLocation && (
-          <Marker coordinate={userLocation} title="You">
+          <Marker coordinate={userLocation} title="You" cluster={false}>
             {/* Custom user marker */}
             <Image
               source={{
-                uri: 'https://cdn.iconscout.com/icon/premium/png-512-thumb/user-marker-4683301-3912247.png?f=webp&w=512',
+                uri: 'https://cdn.iconscout.com/icon/premium/png-512-thumb/user-location-18-615324.png?f=webp&w=512',
               }}
               style={styles.userMarker}
             />
@@ -120,7 +120,14 @@ const TrainerMap = ({ navigation }) => {
             }}
             title={trainer.name}
             onPress={() => setSelectedTrainer(trainer)}
-          />
+          >
+            <Image
+              source={{
+                uri: 'https://cdn.iconscout.com/icon/premium/png-512-thumb/therapist-5460647-4628563.png?f=webp&w=512',
+              }}
+              style={styles.trainerMarker}
+            />
+          </Marker>
         ))}
       </ClusteredMapView>
 
@@ -167,6 +174,10 @@ const styles = StyleSheet.create({
   userMarker: {
     width: 60,
     height: 60,
+  },
+  trainerMarker: {
+    width: 30,
+    height: 30,
   },
   modalContainer: {
     flex: 1,
