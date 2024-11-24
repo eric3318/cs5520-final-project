@@ -24,6 +24,7 @@ const TrainerMap = ({ navigation }) => {
     Location.useForegroundPermissions();
   const [loading, setLoading] = useState(true);
   const mapRef = useRef(null);
+  const [markerSize, setMarkerSize] = useState(60);
 
   useEffect(() => {
     const fetchTrainers = async () => {
@@ -80,6 +81,13 @@ const TrainerMap = ({ navigation }) => {
     getLocationPermission();
   }, []);
 
+  const handleRegionChangeComplete = (region) => {
+    const baseSize = 60;
+    const zoomFactor = 0.05 / region.latitudeDelta;
+    const newSize = Math.min(baseSize * zoomFactor, 100);
+    setMarkerSize(Math.max(newSize, 30));
+  };
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -99,16 +107,19 @@ const TrainerMap = ({ navigation }) => {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
+        onRegionChangeComplete={handleRegionChangeComplete}
         clusterColor="#007bff"
       >
         {userLocation && (
           <Marker coordinate={userLocation} title="You" cluster={false}>
-            {/* Custom user marker */}
             <Image
               source={{
                 uri: 'https://cdn.iconscout.com/icon/premium/png-512-thumb/user-location-18-615324.png?f=webp&w=512',
               }}
-              style={styles.userMarker}
+              style={{
+                width: markerSize * 0.75, // Slightly smaller for user marker
+                height: markerSize * 0.75,
+              }}
             />
           </Marker>
         )}
@@ -126,7 +137,10 @@ const TrainerMap = ({ navigation }) => {
               source={{
                 uri: trainer.imageUri,
               }}
-              style={styles.trainerMarker}
+              style={{
+                width: markerSize,
+                height: markerSize,
+              }}
             />
           </Marker>
         ))}
