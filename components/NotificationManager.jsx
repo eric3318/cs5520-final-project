@@ -37,7 +37,10 @@ export default function NotificationManager() {
           title: 'Upcoming Training Session',
           body: `Your session with trainer will happen on ${date.toDateString()}, make sure to arrive on time!`,
         },
-        trigger: { seconds: Math.floor((date - new Date()) / 1000) },
+        trigger: {
+          seconds: /*Math.floor((date - new Date()) / 1000) */ 3,
+          type: 'timeInterval',
+        },
       });
       Alert.alert('Notification successfully scheduled');
     } catch (err) {
