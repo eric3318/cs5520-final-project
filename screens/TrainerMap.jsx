@@ -3,14 +3,13 @@ import {
   View,
   Text,
   Modal,
-  Button,
   StyleSheet,
   Alert,
   ActivityIndicator,
   Image,
   TouchableOpacity,
 } from 'react-native';
-import MapView, { Marker } from 'react-native-maps';
+import { Marker } from 'react-native-maps';
 import ClusteredMapView from 'react-native-map-clustering';
 import * as Location from 'expo-location';
 import { collection, getDocs } from 'firebase/firestore';
@@ -117,7 +116,7 @@ const TrainerMap = ({ navigation }) => {
                 uri: 'https://cdn.iconscout.com/icon/premium/png-512-thumb/user-location-18-615324.png?f=webp&w=512',
               }}
               style={{
-                width: markerSize * 0.75, // Slightly smaller for user marker
+                width: markerSize * 0.75,
                 height: markerSize * 0.75,
               }}
             />
