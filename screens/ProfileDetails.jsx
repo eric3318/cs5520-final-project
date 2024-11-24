@@ -62,10 +62,6 @@ export default function ProfileDetails({ route }) {
     );
   }, []);
 
-  useEffect(() => {
-    console.log(showNotifier);
-  }, [showNotifier]);
-
   const toggleNotifier = (appointmentId) => {
     setShowNotifier((prev) =>
       prev === null

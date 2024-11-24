@@ -38,7 +38,7 @@ export default function NotificationManager() {
           body: `Your session with trainer will happen on ${date.toDateString()}, make sure to arrive on time!`,
         },
         trigger: {
-          seconds: /*Math.floor((date - new Date()) / 1000) */ 3,
+          seconds: Math.floor((date - new Date()) / 1000),
           type: 'timeInterval',
         },
       });

@@ -18,15 +18,13 @@ Zhiyu implemented the code for "TrainerMap" screen (accessed via "Locate Nearby 
 <img width="319" alt="image" src="https://github.com/user-attachments/assets/01a2f50c-f9ea-4f60-a087-ec6d18d6f187">
 <img width="319" alt="image" src="https://github.com/user-attachments/assets/19646b6a-6b03-4bd7-bce0-a76d1669a6ad">
 
-Han:<br> 
-1. Built Auth screen and implemented user authentication functionalities including signup, login, and logout.
-![img_4.png](img_4.png)
-2. set up the firebase configuration and helper functions to perform CRUD operations on fireBase.
-3. created the Discovery screen and New Post screen and implemented functionalities such as like/unlike and post making.
-![img_1.png](img_1.png)
-4. Implemented the Profile Details Screen, which is used commonly by the three options to conditionally render corresponding data.
-![img_2.png](img_2.png)
-![img_3.png](img_3.png)
+Han:<br>
+1. Implemented the ImageManager component to provide image using camera or selecting from media library.
+![img_5.png](img_5.png) <br>
+2. Implemented the NotificationManager component to schedule local notifications.
+![img_6.png](img_6.png) <br>
+3. Abstracted the code for authentication logic into authContext and a custom useAuth hook.
+
 
 
 
