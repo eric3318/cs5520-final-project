@@ -1,12 +1,14 @@
 import { createContext, useEffect, useState } from 'react';
 import { auth } from '../firebase/firebaseSetup';
 import { onAuthStateChanged } from 'firebase/auth';
+import { COLLECTIONS, readFromDB } from '../firebase/firestoreHelper';
 
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const { currentUser } = auth;
   const [authenticated, setAuthenticated] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
     return onAuthStateChanged(auth, (user) => {
@@ -14,8 +16,25 @@ export const AuthProvider = ({ children }) => {
     });
   }, []);
 
+  useEffect(() => {
+    if (!authenticated) {
+      setUserInfo(null);
+      return;
+    }
+
+    (async () => {
+      try {
+        const data = await readFromDB(currentUser.uid, COLLECTIONS.USER);
+        console.log(data);
+        setUserInfo(data);
+      } catch (e) {
+        console.log(e);
+      }
+    })();
+  }, [authenticated]);
+
   return (
-    <AuthContext.Provider value={[authenticated, currentUser]}>
+    <AuthContext.Provider value={{ authenticated, currentUser, userInfo }}>
       {children}
     </AuthContext.Provider>
   );

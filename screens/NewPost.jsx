@@ -1,21 +1,17 @@
 import { Alert, Image, StyleSheet, View } from 'react-native';
-import { writeToDB } from '../firebase/firestoreHelper';
+import { COLLECTIONS, writeToDB } from '../firebase/firestoreHelper';
 import { Button, TextInput } from 'react-native-paper';
 import { useState } from 'react';
 import { auth, storage } from '../firebase/firebaseSetup';
 import ImageManager from '../components/ImageManager';
 import { newPostImageStyle } from '../utils/constants';
-import {
-  getDownloadURL,
-  ref,
-  uploadBytesResumable,
-  getMetadata,
-} from 'firebase/storage';
+import { ref, uploadBytesResumable, getMetadata } from 'firebase/storage';
+import { useAuth } from '../hook/useAuth';
 
 export default function NewPost({ navigation }) {
   const [imageUri, setImageUri] = useState('');
   const [text, setText] = useState('');
-  const { currentUser } = auth;
+  const { currentUser, userInfo } = useAuth();
 
   const imageHandler = (uri) => {
     setImageUri(uri);
@@ -32,13 +28,17 @@ export default function NewPost({ navigation }) {
     const post = {
       text,
       imageUri: uri,
-      user: currentUser.uid,
+      user: {
+        uid: currentUser.uid,
+        imageUri: userInfo.imageUri,
+        username: userInfo.username,
+      },
       likedBy: [currentUser.uid],
       timestamp: new Date().toISOString(),
     };
 
     try {
-      await writeToDB(post, 'Posts');
+      await writeToDB(post, COLLECTIONS.POST);
       navigation.goBack();
     } catch (err) {
       Alert.alert('Failed to create new post');

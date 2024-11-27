@@ -1,28 +1,31 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Card } from 'react-native-paper';
 import UserAvatar from '../components/UserAvatar';
 import ProfileOption from '../components/ProfileOption';
-
-const LeftAvatar = () => <UserAvatar />;
+import { useAuth } from '../hook/useAuth';
 
 export default function Profile({ navigation }) {
+  const { currentUser, userInfo } = useAuth();
+
   const clickHandler = (option) => {
     navigation.push('Profile Details', { option });
   };
 
   return (
     <View style={styles.container}>
-      <Card style={styles.profileCard}>
-        <Card.Title
-          title="TestUser"
-          subtitle="Member since 2024-11-12"
-          left={LeftAvatar}
-          titleStyle={styles.title}
-          subtitleStyle={styles.subtitle}
-          leftStyle={styles.leftAvatar}
-        />
-      </Card>
+      {userInfo !== null && (
+        <Card style={styles.profileCard}>
+          <Card.Title
+            title={userInfo.username}
+            subtitle={`Member since: ${userInfo.createdAt}`}
+            left={() => <UserAvatar />}
+            titleStyle={styles.title}
+            subtitleStyle={styles.subtitle}
+            leftStyle={styles.leftAvatar}
+          />
+        </Card>
+      )}
 
       <View style={styles.optionsContainer}>
         <ProfileOption

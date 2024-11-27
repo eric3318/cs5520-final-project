@@ -102,7 +102,7 @@ function Tabs() {
 }
 
 function Navigation() {
-  const [authenticated] = useAuth();
+  const { authenticated } = useAuth();
 
   if (authenticated === null) {
     return <Loading />;

@@ -1,4 +1,4 @@
-import { database } from './firebaseSetup';
+import { database, storage } from './firebaseSetup';
 
 import {
   addDoc,
@@ -9,7 +9,15 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
+  setDoc,
 } from 'firebase/firestore';
+import { getDownloadURL, ref } from 'firebase/storage';
+
+export const COLLECTIONS = {
+  USER: 'users',
+  POST: 'posts',
+  APPOINTMENT: 'appointments',
+};
 
 export async function writeToDB(data, collectionName, id = null) {
   try {
@@ -23,11 +31,52 @@ export async function writeToDB(data, collectionName, id = null) {
   }
 }
 
+export async function writeToDBV2(data, collectionName, id = null) {
+  try {
+    if (id) {
+      await setDoc(doc(database, collectionName, id), data);
+    } else {
+      await addDoc(collection(database, collectionName), data);
+    }
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function readFromStorage(path) {
+  try {
+    return await getDownloadURL(ref(storage, path));
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function updateDB(data, collectionName, id) {
+  try {
+    await updateDoc(doc(database, collectionName, id), data);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
 export async function deleteFromDB(id, collectionName) {
   try {
     await deleteDoc(doc(database, collectionName, id));
   } catch (err) {
     console.log(err);
+  }
+}
+
+export async function readFromDB(id, collectionName) {
+  try {
+    const document = await getDoc(doc(database, collectionName, id));
+    if (!document.exists()) {
+      throw new Error('The document requested does not exist in database');
+    }
+    return document.data();
+  } catch (err) {
+    console.log(err);
+    return null;
   }
 }
 

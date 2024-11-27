@@ -2,14 +2,13 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Button, Card } from 'react-native-paper';
 import { auth } from '../firebase/firebaseSetup';
-import { writeToDB } from '../firebase/firestoreHelper';
+import { readFromStorage, writeToDB } from '../firebase/firestoreHelper';
 import { useEffect, useState } from 'react';
-import { getDownloadURL, ref } from 'firebase/storage';
-import { storage } from '../firebase/firebaseSetup';
 
 export default function Post({ item }) {
   const { currentUser } = auth;
-  const [downloadUrl, setDownloadUrl] = useState('');
+  const [postImageURL, setPostImageURL] = useState('');
+  const [userImageURL, setUserImageURL] = useState('');
   const [liked, setLiked] = useState(item.likedBy.includes(currentUser.uid));
 
   const likeClickHandler = async () => {
@@ -29,14 +28,13 @@ export default function Post({ item }) {
 
   useEffect(() => {
     (async () => {
-      if (item?.imageUri) {
-        try {
-          const reference = ref(storage, item.imageUri);
-          const url = await getDownloadURL(reference);
-          setDownloadUrl(url);
-        } catch (err) {
-          console.log(err);
-        }
+      if (item.imageUri) {
+        let url = await readFromStorage(item.imageUri);
+        setPostImageURL(url);
+      }
+      if (item.user.imageUri) {
+        let url = await readFromStorage(item.user.imageUri);
+        setUserImageURL(url);
       }
     })();
   }, []);
@@ -46,19 +44,22 @@ export default function Post({ item }) {
       <Card.Content style={styles.cardContent}>
         <View style={styles.upperSection}>
           <View style={styles.userInfo}>
-            <Image
-              source={require('../assets/icon.png')}
-              style={{ width: 50, height: 50 }}
-            />
+            {userImageURL && (
+              <Image
+                source={{ uri: userImageURL }}
+                style={{ width: 50, height: 50 }}
+              />
+            )}
+
             <View>
               <Text>{item.timestamp}</Text>
-              <Text>username</Text>
+              <Text>{item.user.username}</Text>
             </View>
           </View>
           <View style={styles.like}>
             <Button onPress={likeClickHandler}>
               {liked ? (
-                <FontAwesome name="heart-o" size={18} color="red" />
+                <FontAwesome name="heart" size={18} color="red" />
               ) : (
                 <FontAwesome name="heart-o" size={18} color="black" />
               )}
@@ -66,12 +67,15 @@ export default function Post({ item }) {
             <Text>{item.likedBy.length}</Text>
           </View>
         </View>
-        {downloadUrl && (
+        {postImageURL && (
           <View style={styles.contentSection}>
-            <Image
-              source={{ uri: downloadUrl }}
-              style={{ width: '100%', height: 200 }}
-            />
+            {postImageURL && (
+              <Image
+                source={{ uri: postImageURL }}
+                style={{ width: '100%', height: 200 }}
+              />
+            )}
+
             <Text>{item.text}</Text>
           </View>
         )}

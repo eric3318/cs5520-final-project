@@ -6,6 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
+import { COLLECTIONS, writeToDBV2 } from '../firebase/firestoreHelper';
 
 const SIGNUP = 'Sign Up';
 const LOGIN = 'Log In';
@@ -46,18 +47,30 @@ export default function Auth({ navigation }) {
       return;
     }
     // todo: add more data verification
+    let userCred;
     try {
-      const userCred = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log(userCred);
+      userCred = await createUserWithEmailAndPassword(auth, email, password);
     } catch (err) {
       if (err.code === 'auth/weak-password') {
         Alert.alert('Password should be at least 6 characters');
       }
       console.log(err);
+    }
+
+    if (userCred) {
+      try {
+        await writeToDBV2(
+          {
+            username,
+            imageUri: 'images/Default.JPG',
+            createdAt: new Date().toISOString(),
+          },
+          COLLECTIONS.USER,
+          userCred.user.uid
+        );
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
