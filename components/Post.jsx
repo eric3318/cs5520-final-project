@@ -2,8 +2,13 @@ import { Image, StyleSheet, Text, View } from 'react-native';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Button, Card } from 'react-native-paper';
 import { auth } from '../firebase/firebaseSetup';
-import { readFromStorage, writeToDB } from '../firebase/firestoreHelper';
+import {
+  COLLECTIONS,
+  readFromStorage,
+  writeToDB,
+} from '../firebase/firestoreHelper';
 import { useEffect, useState } from 'react';
+import { Avatar } from 'react-native-paper';
 
 export default function Post({ item }) {
   const { currentUser } = auth;
@@ -14,13 +19,17 @@ export default function Post({ item }) {
   const likeClickHandler = async () => {
     if (item.likedBy.includes(currentUser.uid)) {
       let newLikedArr = item.likedBy.filter((uid) => uid !== currentUser.uid);
-      await writeToDB({ ...item, likedBy: newLikedArr }, 'Posts', item.id);
+      await writeToDB(
+        { ...item, likedBy: newLikedArr },
+        COLLECTIONS.POST,
+        item.id
+      );
       setLiked(false);
       return;
     }
     await writeToDB(
       { ...item, likedBy: [...item.likedBy, currentUser.uid] },
-      'Posts',
+      COLLECTIONS.POST,
       item.id
     );
     setLiked(true);
@@ -45,15 +54,11 @@ export default function Post({ item }) {
         <View style={styles.upperSection}>
           <View style={styles.userInfo}>
             {userImageURL && (
-              <Image
-                source={{ uri: userImageURL }}
-                style={{ width: 50, height: 50 }}
-              />
+              <Avatar.Image size={36} source={{ uri: userImageURL }} />
             )}
-
             <View>
-              <Text>{item.timestamp}</Text>
-              <Text>{item.user.username}</Text>
+              <Text style={styles.timeText}>{item.timestamp}</Text>
+              <Text style={styles.usernameText}>{item.user.username}</Text>
             </View>
           </View>
           <View style={styles.like}>
@@ -98,6 +103,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     columnGap: 6,
   },
+  usernameText: { fontWeight: 'bold' },
+  timeText: { fontSize: 12 },
   like: {
     alignItems: 'center',
   },
