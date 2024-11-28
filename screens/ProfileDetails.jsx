@@ -5,8 +5,9 @@ import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import Post from '../components/Post';
 import AppointmentCard from '../components/AppointmentCard';
 import NotificationManager from '../components/NotificationManager';
+import { COLLECTIONS } from '../firebase/firestoreHelper';
 
-export default function ProfileDetails({ route }) {
+export default function ProfileDetails({ navigation, route }) {
   const { currentUser } = auth;
   const { option } = route.params;
   const [posts, setPosts] = useState([]);
@@ -14,9 +15,15 @@ export default function ProfileDetails({ route }) {
   const [appointments, setAppointments] = useState([]);
   const [showNotifier, setShowNotifier] = useState(null);
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: option,
+    });
+  }, [navigation]);
+
   const refreshAppointments = useCallback(() => {
     const q = query(
-      collection(database, 'Appointments'),
+      collection(database, COLLECTIONS.APPOINTMENT),
       where('user', '==', currentUser.uid)
     );
     onSnapshot(q, (querySnapshot) => {
@@ -33,10 +40,10 @@ export default function ProfileDetails({ route }) {
       query(
         collection(
           database,
-          option === 'Appointments' ? 'Appointments' : 'Posts'
+          option === 'Appointments' ? COLLECTIONS.APPOINTMENT : COLLECTIONS.POST
         ),
         option !== 'Liked Posts'
-          ? where('user', '==', currentUser.uid)
+          ? where('user.uid', '==', currentUser.uid)
           : where('likedBy', 'array-contains', currentUser.uid)
       ),
       (querySnapshot) => {
