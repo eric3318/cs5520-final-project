@@ -4,13 +4,25 @@ import { Card } from 'react-native-paper';
 import UserAvatar from '../components/UserAvatar';
 import ProfileOption from '../components/ProfileOption';
 import { useAuth } from '../hook/useAuth';
+import { Avatar } from 'react-native-paper';
+import { readFromStorage } from '../firebase/firestoreHelper';
 
 export default function Profile({ navigation }) {
-  const { currentUser, userInfo } = useAuth();
+  const { userInfo } = useAuth();
+  const [imageURL, setImageURL] = useState('');
 
   const clickHandler = (option) => {
     navigation.push('Profile Details', { option });
   };
+
+  useEffect(() => {
+    (async () => {
+      if (userInfo.imageUri) {
+        let url = await readFromStorage(userInfo.imageUri);
+        setImageURL(url);
+      }
+    })();
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -19,7 +31,9 @@ export default function Profile({ navigation }) {
           <Card.Title
             title={userInfo.username}
             subtitle={`Member since: ${userInfo.createdAt}`}
-            left={() => <UserAvatar />}
+            left={() => (
+              <Avatar.Image source={{ uri: imageURL }}> </Avatar.Image>
+            )}
             titleStyle={styles.title}
             subtitleStyle={styles.subtitle}
             leftStyle={styles.leftAvatar}
