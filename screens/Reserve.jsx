@@ -19,7 +19,7 @@ import {
 import { ALL_TIMESLOTS } from '../utils/constants';
 
 const Reserve = ({ route, navigation }) => {
-  const { trainerId, trainerName } = route.params;
+  const { trainerId, trainerName, returnTo } = route.params;
   const today = moment().format('YYYY-MM-DD');
 
   const [bookedTimes, setBookedTimes] = useState([]);
@@ -54,7 +54,11 @@ const Reserve = ({ route, navigation }) => {
       const datetime = `${selectedDate} ${selectedTime}`;
       await addAppointment(user, trainerId, trainerName, datetime);
       Alert.alert('Appointment confirmed!');
-      navigation.goBack();
+      if (returnTo) {
+        navigation.navigate(returnTo);
+      } else {
+        navigation.goBack();
+      }
     } catch (error) {
       console.error('Error booking timeslot:', error);
       Alert.alert('Could not complete appointment. Please try again.');

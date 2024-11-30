@@ -7,71 +7,45 @@ import Exercise from './screens/Exercise';
 import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
 import Reserve from './screens/Reserve';
+import TrainerMap from './screens/TrainerMap';
+import { View } from 'react-native';
 import Auth from './screens/Auth';
 import ProfileDetails from './screens/ProfileDetails';
-import React, { useEffect, useState } from 'react';
-import { auth, database } from './firebase/firebaseSetup';
-import { collection, doc, getDoc, setDoc } from 'firebase/firestore';
-import uuid from 'react-native-uuid';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import React, { useEffect } from 'react';
+import { auth } from './firebase/firebaseSetup';
+import { signOut } from 'firebase/auth';
 import { Button } from 'react-native-paper';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { useAuth } from './hook/useAuth';
+import { AuthProvider } from './context/authContext';
+import Loading from './components/Loading';
+import { initializeTrainers } from './utils/helpers';
+import * as Notifications from 'expo-notifications';
 
-const trainers = [
-  {
-    name: 'Trainer 1',
-    focus: 'Strength',
-    imageUri:
-      'https://img.freepik.com/free-photo/adult-pretty-woman-happy-expression-gym-fitness-teacher-concept-ai-generated_1194-588907.jpg?semt=ais_hybrid',
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return { shouldShowAlert: true };
   },
-  {
-    name: 'Trainer 2',
-    focus: 'Yoga',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564785.jpg?semt=ais_hybrid',
-  },
-  {
-    name: 'Trainer 3',
-    focus: 'Pilates',
-    imageUri:
-      'https://img.freepik.com/free-photo/portrait-fitness-influencer_23-2151564820.jpg?semt=ais_hybrid',
-  },
-  {
-    name: 'Trainer 4',
-    focus: 'Cardio',
-    imageUri:
-      'https://img.freepik.com/free-photo/close-up-people-doing-yoga-indoors_23-2150848089.jpg?semt=ais_hybrid',
-  },
-];
-
-async function initializeTrainers() {
-  const setupDocRef = doc(database, 'AppSetup', 'setupComplete');
-  const setupDocSnap = await getDoc(setupDocRef);
-
-  if (setupDocSnap.exists()) {
-    return;
-  }
-
-  const trainerCollection = collection(database, 'Trainer');
-
-  for (const trainer of trainers) {
-    const trainerId = uuid.v4();
-    await setDoc(doc(trainerCollection, trainerId), {
-      ...trainer,
-      trainerId,
-      bookedTimeslots: {},
-    });
-  }
-
-  await setDoc(setupDocRef, { initialized: true });
-}
+});
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
+export default function App() {
+  useEffect(() => {
+    initializeTrainers();
+  }, []);
+
+  return (
+    <AuthProvider>
+      <Navigation />
+    </AuthProvider>
+  );
+}
 
 function Tabs() {
   return (
@@ -127,23 +101,17 @@ function Tabs() {
   );
 }
 
-export default function App() {
-  const [loggedIn, setLoggedIn] = useState(false);
+function Navigation() {
+  const [authenticated] = useAuth();
 
-  useEffect(() => {
-    initializeTrainers();
-  }, []);
-
-  useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
-      user ? setLoggedIn(true) : setLoggedIn(false);
-    });
-  }, []);
+  if (authenticated === null) {
+    return <Loading />;
+  }
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
-        {loggedIn ? (
+        {authenticated ? (
           <>
             <Stack.Screen
               name="Tabs"
@@ -166,6 +134,11 @@ export default function App() {
               options={{
                 title: 'Select a Date & Time',
               }}
+            />
+            <Stack.Screen
+              name="TrainerMap"
+              component={TrainerMap}
+              options={{ title: 'Find Trainers' }}
             />
           </>
         ) : (

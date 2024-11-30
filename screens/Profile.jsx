@@ -37,8 +37,8 @@ export default function Profile({ navigation }) {
         />
         <ProfileOption
           icon="star"
-          label="Favourited Posts"
-          onPress={() => clickHandler('Favourited Posts')}
+          label="Liked Posts"
+          onPress={() => clickHandler('Liked Posts')}
         />
       </View>
     </View>

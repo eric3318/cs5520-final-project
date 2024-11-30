@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 import TrainerCard from '../components/TrainerCard';
@@ -8,11 +8,13 @@ import { getAllBookedTimeslots } from '../firebase/firestoreHelper';
 import { ALL_TIMESLOTS } from '../utils/constants';
 import moment from 'moment';
 import { useFocusEffect } from '@react-navigation/native';
+import { Card, Title } from 'react-native-paper';
 
 const Appointment = ({ navigation }) => {
   const [trainers, setTrainers] = useState([]);
   const [availabilityFilter, setAvailabilityFilter] = useState(null);
   const [focusFilter, setFocusFilter] = useState(null);
+  const [filteredTrainers, setFilteredTrainers] = useState([]);
 
   const [availabilityOpen, setAvailabilityOpen] = useState(false);
   const [focusOpen, setFocusOpen] = useState(false);
@@ -50,6 +52,7 @@ const Appointment = ({ navigation }) => {
           })
         );
         setTrainers(trainerList);
+        setFilteredTrainers(trainerList);
       };
       fetchTrainers();
     }, [])
@@ -57,25 +60,38 @@ const Appointment = ({ navigation }) => {
 
   const calculateAvailability = (bookedTimeslots) => {
     const today = moment();
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 10; i++) {
       const date = today.clone().add(i, 'days').format('YYYY-MM-DD');
       const bookedTimes = bookedTimeslots[date] || [];
       if (bookedTimes.length < ALL_TIMESLOTS.length) {
-        return `${i} days`;
+        return i;
       }
     }
-    return 'No availability';
+    return -1;
   };
 
-  const filteredTrainers = trainers.filter((trainer) => {
-    const availabilityMatch =
-      !availabilityFilter || trainer.availability === availabilityFilter;
-    const focusMatch = !focusFilter || trainer.focus === focusFilter;
-    return availabilityMatch && focusMatch;
-  });
+  useEffect(() => {
+    const filtered = trainers.filter((trainer) => {
+      const availabilityMatch =
+        !availabilityFilter ||
+        (trainer.availability >= 0 &&
+          trainer.availability <= parseInt(availabilityFilter.charAt(0)));
+      const focusMatch = !focusFilter || trainer.focus === focusFilter;
+      return availabilityMatch && focusMatch;
+    });
+    setFilteredTrainers(filtered);
+  }, [availabilityFilter, focusFilter]);
 
   return (
     <View style={styles.container}>
+      <Card
+        style={styles.card}
+        onPress={() => navigation.navigate('TrainerMap')}
+      >
+        <Card.Content>
+          <Title style={styles.cardTitle}>Locate Nearby Trainers</Title>
+        </Card.Content>
+      </Card>
       <View style={styles.filterContainer}>
         <DropDownPicker
           open={availabilityOpen}
@@ -123,6 +139,17 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
+  },
+  card: {
+    marginBottom: 16,
+    borderRadius: 8,
+    elevation: 2,
+  },
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#007bff',
   },
   header: {
     fontSize: 24,
