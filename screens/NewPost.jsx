@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import { storage } from '../firebase/firebaseSetup';
 import ImageManager from '../components/ImageManager';
 import { newPostImageStyle } from '../utils/constants';
-import { ref, uploadBytesResumable, getMetadata } from 'firebase/storage';
+import { getMetadata, ref, uploadBytesResumable } from 'firebase/storage';
 import { useAuth } from '../hook/useAuth';
 
 export default function NewPost({ navigation, route }) {

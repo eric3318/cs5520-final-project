@@ -1,7 +1,7 @@
-import { FlatList, StyleSheet, View } from 'react-native';
+import { FlatList, StyleSheet } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Button } from 'react-native-paper';
-import { collection, onSnapshot, query, where } from 'firebase/firestore';
+import { collection, onSnapshot, query } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
 import Post from '../components/Post';
 import { COLLECTIONS } from '../firebase/firestoreHelper';

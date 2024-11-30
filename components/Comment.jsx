@@ -1,4 +1,4 @@
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { Avatar } from 'react-native-paper';
 
 function Comment({ item }) {

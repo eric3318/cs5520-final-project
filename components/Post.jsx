@@ -1,5 +1,5 @@
 import { Alert, Image, StyleSheet, Text, View } from 'react-native';
-import { Card } from 'react-native-paper';
+import { Avatar, Card, IconButton, TextInput } from 'react-native-paper';
 import {
   COLLECTIONS,
   deleteFromDB,
@@ -8,12 +8,9 @@ import {
   writeToDB,
 } from '../firebase/firestoreHelper';
 import { useEffect, useRef, useState } from 'react';
-import { Avatar } from 'react-native-paper';
-import { TextInput } from 'react-native-paper';
 import { useAuth } from '../hook/useAuth';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
-import { IconButton } from 'react-native-paper';
 import { collection, onSnapshot, query } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
 

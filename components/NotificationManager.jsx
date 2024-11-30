@@ -1,8 +1,8 @@
-import { Alert, View } from 'react-native';
+import { Alert } from 'react-native';
 import {
-  scheduleNotificationAsync,
   getPermissionsAsync,
   requestPermissionsAsync,
+  scheduleNotificationAsync,
 } from 'expo-notifications';
 import DatePicker from './DatePicker';
 import { useState } from 'react';

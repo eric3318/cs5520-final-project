@@ -1,6 +1,6 @@
-import { Alert, View, Image, StyleSheet, FlatList, Text } from 'react-native';
+import { FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import { launchCameraAsync, useCameraPermissions } from 'expo-image-picker';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import {
   getAssetInfoAsync,

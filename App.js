@@ -8,7 +8,6 @@ import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
 import Reserve from './screens/Reserve';
 import TrainerMap from './screens/TrainerMap';
-import { View } from 'react-native';
 import Auth from './screens/Auth';
 import ProfileDetails from './screens/ProfileDetails';
 import React, { useEffect } from 'react';

@@ -1,6 +1,6 @@
-import { View, FlatList } from 'react-native';
-import { database, auth } from '../firebase/firebaseSetup';
-import { useEffect, useState, useCallback } from 'react';
+import { FlatList, View } from 'react-native';
+import { auth, database } from '../firebase/firebaseSetup';
+import { useCallback, useEffect, useState } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import Post from '../components/Post';
 import AppointmentCard from '../components/AppointmentCard';
