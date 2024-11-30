@@ -9,6 +9,7 @@ import NewPost from './screens/NewPost';
 import Reserve from './screens/Reserve';
 import TrainerMap from './screens/TrainerMap';
 import VideosScreen from './screens/VideosScreen';
+import VideoPlayerScreen from './screens/VideoPlayerScreen';
 import { View } from 'react-native';
 import Auth from './screens/Auth';
 import ProfileDetails from './screens/ProfileDetails';
@@ -145,6 +146,11 @@ function Navigation() {
               name="Videos"
               component={VideosScreen}
               options={{ title: 'Videos' }}
+            />
+            <Stack.Screen
+              name="VideoPlayer"
+              component={VideoPlayerScreen}
+              options={{ title: 'Watch Video' }}
             />
           </>
         ) : (

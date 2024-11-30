@@ -10,11 +10,13 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { YOUTUBE_API_KEY } from '../utils/constants';
+import { useNavigation } from '@react-navigation/native';
 
 const VideosScreen = ({ route }) => {
   const { categoryName } = route.params;
   const [videos, setVideos] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigation = useNavigation();
 
   useEffect(() => {
     fetchVideos(categoryName);
@@ -39,12 +41,15 @@ const VideosScreen = ({ route }) => {
     }
   };
 
-  const handleSearch = () => {
-    fetchVideos(searchQuery);
+  const handleVideoPress = (videoId) => {
+    navigation.navigate('VideoPlayer', { videoId });
   };
 
   const renderVideoItem = ({ item }) => (
-    <TouchableOpacity style={styles.videoCard}>
+    <TouchableOpacity
+      style={styles.videoCard}
+      onPress={() => handleVideoPress(item.id.videoId)}
+    >
       <Image
         source={{ uri: item.snippet.thumbnails.medium.url }}
         style={styles.thumbnail}

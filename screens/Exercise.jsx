@@ -23,13 +23,12 @@ const categories = [
     image:
       'https://images.pexels.com/photos/7339492/pexels-photo-7339492.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
   },
-  /*{
+  {
     id: '4',
     name: 'Ankle',
     image:
       'https://images.pexels.com/photos/7991959/pexels-photo-7991959.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
   },
-  */
 ];
 
 const Exercise = () => {
