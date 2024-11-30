@@ -121,20 +121,8 @@ function Navigation() {
                 headerShown: false,
               }}
             />
-            <Stack.Screen
-              name="New Post"
-              component={NewPost}
-              options={{
-                title: 'Make New Post',
-              }}
-            />
-            <Stack.Screen
-              name="Post Details"
-              component={PostDetails}
-              options={{
-                title: '',
-              }}
-            />
+            <Stack.Screen name="New Post" component={NewPost} />
+            <Stack.Screen name="Post Details" component={PostDetails} />
             <Stack.Screen name="Profile Details" component={ProfileDetails} />
             <Stack.Screen
               name="Reserve"

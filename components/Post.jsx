@@ -2,6 +2,7 @@ import { Alert, Image, StyleSheet, Text, View } from 'react-native';
 import { Card } from 'react-native-paper';
 import {
   COLLECTIONS,
+  deleteFromDB,
   readFromStorage,
   updateDB,
   writeToDB,
@@ -13,7 +14,7 @@ import { useAuth } from '../hook/useAuth';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useNavigation } from '@react-navigation/native';
 import { IconButton } from 'react-native-paper';
-import { collection, doc, onSnapshot, query } from 'firebase/firestore';
+import { collection, onSnapshot, query } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
 
 export default function Post({ item }) {
@@ -68,6 +69,24 @@ export default function Post({ item }) {
     return () => unsubscribe();
   }, []);
 
+  const editButtonClickHandler = () => {
+    navigation.navigate('New Post', { post: item });
+  };
+
+  const deleteButtonClickHandler = () => {
+    Alert.alert('Delete Post', 'Would you like to delete the post?', [
+      {
+        text: 'Cancel',
+      },
+      {
+        text: 'Confirm',
+        onPress: async () => {
+          await deleteFromDB(COLLECTIONS.POST, item.id);
+        },
+      },
+    ]);
+  };
+
   const likeButtonClickHandler = async () => {
     if (item.likedBy.includes(currentUser.uid)) {
       let newLikedArr = item.likedBy.filter((uid) => uid !== currentUser.uid);
@@ -108,15 +127,43 @@ export default function Post({ item }) {
   return (
     <Card>
       <Card.Content style={styles.cardContent}>
-        <View style={styles.userSection}>
-          {postUserImageURL && (
-            <Avatar.Image size={36} source={{ uri: postUserImageURL }} />
-          )}
-          <View>
-            <Text style={styles.usernameText}>{item.user.username}</Text>
-            <Text style={styles.timeText}>{item.timestamp}</Text>
+        <View style={styles.upperSection}>
+          <View style={styles.userSection}>
+            {postUserImageURL && (
+              <Avatar.Image size={36} source={{ uri: postUserImageURL }} />
+            )}
+            <View>
+              <Text style={styles.usernameText}>{item.user.username}</Text>
+              <Text style={styles.timeText}>{item.timestamp}</Text>
+            </View>
           </View>
-          {currentUser.uid === item.user.uid}
+
+          {currentUser.uid === item.user.uid && (
+            <View style={styles.iconContainer}>
+              <IconButton
+                icon={() => (
+                  <MaterialCommunityIcons
+                    name="pencil-outline"
+                    size={24}
+                    color="black"
+                  />
+                )}
+                onPress={editButtonClickHandler}
+                size={10}
+              />
+              <IconButton
+                icon={() => (
+                  <MaterialCommunityIcons
+                    name="delete-outline"
+                    size={24}
+                    color="black"
+                  />
+                )}
+                onPress={deleteButtonClickHandler}
+                size={10}
+              />
+            </View>
+          )}
         </View>
 
         {postImageURL && (
@@ -160,6 +207,7 @@ export default function Post({ item }) {
               )}
               onPress={commentButtonClickHandler}
               size={10}
+              disabled={comments.length === 0}
             />
             <Text>{comments.length}</Text>
           </View>
@@ -199,6 +247,11 @@ const styles = StyleSheet.create({
   cardContent: {
     rowGap: 12,
   },
+  upperSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
   userSection: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -209,7 +262,6 @@ const styles = StyleSheet.create({
   iconContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    columnGap: 6,
   },
   iconButton: {
     flexDirection: 'row',
@@ -222,6 +274,7 @@ const styles = StyleSheet.create({
   },
   commentTextInput: {
     flexGrow: 1,
+    fontSize: 14,
   },
   commentButton: {
     flex: 1,

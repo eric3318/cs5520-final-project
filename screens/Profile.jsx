@@ -30,10 +30,12 @@ export default function Profile({ navigation }) {
         <Card style={styles.profileCard}>
           <Card.Title
             title={userInfo.username}
-            subtitle={`Member since: ${userInfo.createdAt}`}
-            left={() => (
-              <Avatar.Image source={{ uri: imageURL }}> </Avatar.Image>
-            )}
+            subtitle={`Member since: ${new Date(userInfo.createdAt)}`}
+            left={() =>
+              imageURL && (
+                <Avatar.Image source={{ uri: imageURL }}> </Avatar.Image>
+              )
+            }
             titleStyle={styles.title}
             subtitleStyle={styles.subtitle}
             leftStyle={styles.leftAvatar}

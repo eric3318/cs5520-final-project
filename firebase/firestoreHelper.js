@@ -67,7 +67,7 @@ export async function updateDB(data, collectionName, id) {
   }
 }
 
-export async function deleteFromDB(id, collectionName) {
+export async function deleteFromDB(collectionName, id) {
   try {
     await deleteDoc(doc(database, collectionName, id));
   } catch (err) {
