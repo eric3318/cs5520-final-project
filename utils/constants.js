@@ -44,6 +44,8 @@ export const trainers = [
   },
 ];
 
+export const YOUTUBE_API_KEY = 'AIzaSyDu6vVjFqs3_rrJtT7Rv5H9z9cNqSw_iqo';
+
 export const newPostImageStyle = {
   width: '100%',
   height: 250,
