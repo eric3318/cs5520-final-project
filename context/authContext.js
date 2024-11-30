@@ -24,8 +24,7 @@ export const AuthProvider = ({ children }) => {
 
     (async () => {
       try {
-        const data = await readFromDB(currentUser.uid, COLLECTIONS.USER);
-        console.log(data);
+        const data = await readFromDB(COLLECTIONS.USER, currentUser.uid);
         setUserInfo(data);
       } catch (e) {
         console.log(e);

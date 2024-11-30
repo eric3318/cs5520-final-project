@@ -1,9 +1,10 @@
 import { FlatList, StyleSheet, View } from 'react-native';
 import { useEffect, useState } from 'react';
 import { Button } from 'react-native-paper';
-import { collection, onSnapshot, query } from 'firebase/firestore';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
 import Post from '../components/Post';
+import { COLLECTIONS } from '../firebase/firestoreHelper';
 
 export default function Discovery({ navigation }) {
   const [posts, setPosts] = useState([]);
@@ -13,8 +14,8 @@ export default function Discovery({ navigation }) {
   };
 
   useEffect(() => {
-    onSnapshot(
-      query(collection(database, 'Posts')),
+    const unsubscribe = onSnapshot(
+      query(collection(database, COLLECTIONS.POST)),
       (querySnapshot) => {
         let newArray = [];
         querySnapshot.forEach((docSnapshot) => {
@@ -26,6 +27,7 @@ export default function Discovery({ navigation }) {
         console.log('on snapshot ', error);
       }
     );
+    return () => unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -37,16 +39,11 @@ export default function Discovery({ navigation }) {
   }, [navigation]);
 
   return (
-    <View>
-      <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
-      <View style={styles.container}>
-        <FlatList
-          data={posts}
-          renderItem={({ item }) => <Post item={item} />}
-          contentContainerStyle={styles.flatList}
-        />
-      </View>
-    </View>
+    <FlatList
+      data={posts}
+      renderItem={({ item }) => <Post item={item} />}
+      pagingEnabled
+    />
   );
 }
 

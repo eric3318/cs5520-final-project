@@ -6,7 +6,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
-import { COLLECTIONS, writeToDBV2 } from '../firebase/firestoreHelper';
+import { COLLECTIONS, writeToDB } from '../firebase/firestoreHelper';
 
 const SIGNUP = 'Sign Up';
 const LOGIN = 'Log In';
@@ -59,13 +59,14 @@ export default function Auth({ navigation }) {
 
     if (userCred) {
       try {
-        await writeToDBV2(
+        await writeToDB(
           {
             username,
             imageUri: 'images/Default.JPG',
             createdAt: new Date().toISOString(),
           },
           COLLECTIONS.USER,
+          null,
           userCred.user.uid
         );
       } catch (err) {

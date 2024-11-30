@@ -25,6 +25,7 @@ import { AuthProvider } from './context/authContext';
 import Loading from './components/Loading';
 import { initializeTrainers } from './utils/helpers';
 import * as Notifications from 'expo-notifications';
+import PostDetails from './screens/PostDetails';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => {
@@ -125,6 +126,13 @@ function Navigation() {
               component={NewPost}
               options={{
                 title: 'Make New Post',
+              }}
+            />
+            <Stack.Screen
+              name="Post Details"
+              component={PostDetails}
+              options={{
+                title: '',
               }}
             />
             <Stack.Screen name="Profile Details" component={ProfileDetails} />

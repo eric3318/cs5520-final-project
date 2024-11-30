@@ -1,89 +1,195 @@
-import { Image, StyleSheet, Text, View } from 'react-native';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Button, Card } from 'react-native-paper';
-import { auth } from '../firebase/firebaseSetup';
+import { Alert, Image, StyleSheet, Text, View } from 'react-native';
+import { Card } from 'react-native-paper';
 import {
   COLLECTIONS,
   readFromStorage,
+  updateDB,
   writeToDB,
 } from '../firebase/firestoreHelper';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Avatar } from 'react-native-paper';
+import { TextInput } from 'react-native-paper';
+import { useAuth } from '../hook/useAuth';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
+import { IconButton } from 'react-native-paper';
+import { collection, doc, onSnapshot, query } from 'firebase/firestore';
+import { database } from '../firebase/firebaseSetup';
 
 export default function Post({ item }) {
-  const { currentUser } = auth;
+  const { currentUser, userInfo } = useAuth();
   const [postImageURL, setPostImageURL] = useState('');
-  const [userImageURL, setUserImageURL] = useState('');
+  const [postUserImageURL, setPostUserImageURL] = useState('');
+  const [currentUserImageURL, setCurrentUserImageURL] = useState('');
   const [liked, setLiked] = useState(item.likedBy.includes(currentUser.uid));
+  const [comments, setComments] = useState([]);
+  const [commentText, setCommentText] = useState('');
+  const navigation = useNavigation();
+  const inputRef = useRef(null);
 
-  const likeClickHandler = async () => {
+  useEffect(() => {
+    (async () => {
+      let tasks = [];
+      if (userInfo.imageUri) {
+        tasks.push(readFromStorage(userInfo.imageUri));
+      }
+      if (item.imageUri) {
+        tasks.push(readFromStorage(item.imageUri));
+      }
+      if (item.user.imageUri) {
+        tasks.push(readFromStorage(item.user.imageUri));
+      }
+      let [url1, url2, url3] = await Promise.all(tasks);
+      if (url1) setCurrentUserImageURL(url1);
+      if (url2) setPostImageURL(url2);
+      if (url3) setPostUserImageURL(url3);
+    })();
+  }, []);
+
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      query(
+        collection(
+          database,
+          `${COLLECTIONS.POST}/${item.id}/${COLLECTIONS.COMMENT}`
+        )
+      ),
+      (querySnapshot) => {
+        let newComments = [];
+        querySnapshot.forEach((docSnapshot) => {
+          newComments.push({ ...docSnapshot.data(), id: docSnapshot.id });
+        });
+        setComments(newComments);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+    return () => unsubscribe();
+  }, []);
+
+  const likeButtonClickHandler = async () => {
     if (item.likedBy.includes(currentUser.uid)) {
       let newLikedArr = item.likedBy.filter((uid) => uid !== currentUser.uid);
-      await writeToDB(
-        { ...item, likedBy: newLikedArr },
-        COLLECTIONS.POST,
-        item.id
-      );
+      await updateDB({ likedBy: newLikedArr }, COLLECTIONS.POST, item.id);
       setLiked(false);
       return;
     }
-    await writeToDB(
-      { ...item, likedBy: [...item.likedBy, currentUser.uid] },
+    await updateDB(
+      { likedBy: [...item.likedBy, currentUser.uid] },
       COLLECTIONS.POST,
       item.id
     );
     setLiked(true);
   };
 
-  useEffect(() => {
-    (async () => {
-      if (item.imageUri) {
-        let url = await readFromStorage(item.imageUri);
-        setPostImageURL(url);
-      }
-      if (item.user.imageUri) {
-        let url = await readFromStorage(item.user.imageUri);
-        setUserImageURL(url);
-      }
-    })();
-  }, []);
+  const newCommentHandler = async () => {
+    if (commentText?.length < 8) {
+      Alert.alert('Too few words');
+      return;
+    }
+    let comment = {
+      text: commentText,
+      user: {
+        uid: currentUser.uid,
+        imageUri: userInfo.imageUri,
+        username: userInfo.username,
+      },
+    };
+    await writeToDB(comment, COLLECTIONS.POST, COLLECTIONS.COMMENT, item.id);
+    setCommentText('');
+    inputRef.current.blur();
+  };
+
+  const commentButtonClickHandler = () => {
+    navigation.navigate('Post Details', { commentsData: comments });
+  };
 
   return (
     <Card>
       <Card.Content style={styles.cardContent}>
-        <View style={styles.upperSection}>
-          <View style={styles.userInfo}>
-            {userImageURL && (
-              <Avatar.Image size={36} source={{ uri: userImageURL }} />
-            )}
-            <View>
-              <Text style={styles.timeText}>{item.timestamp}</Text>
-              <Text style={styles.usernameText}>{item.user.username}</Text>
-            </View>
+        <View style={styles.userSection}>
+          {postUserImageURL && (
+            <Avatar.Image size={36} source={{ uri: postUserImageURL }} />
+          )}
+          <View>
+            <Text style={styles.usernameText}>{item.user.username}</Text>
+            <Text style={styles.timeText}>{item.timestamp}</Text>
           </View>
-          <View style={styles.like}>
-            <Button onPress={likeClickHandler}>
-              {liked ? (
-                <FontAwesome name="heart" size={18} color="red" />
-              ) : (
-                <FontAwesome name="heart-o" size={18} color="black" />
-              )}
-            </Button>
+          {currentUser.uid === item.user.uid}
+        </View>
+
+        {postImageURL && (
+          <Image
+            source={{ uri: postImageURL }}
+            style={{ width: '100%', height: 200 }}
+          />
+        )}
+
+        <View style={styles.iconContainer}>
+          <View style={styles.iconButton}>
+            <IconButton
+              icon={() =>
+                liked ? (
+                  <MaterialCommunityIcons
+                    name="cards-heart"
+                    size={24}
+                    color="red"
+                  />
+                ) : (
+                  <MaterialCommunityIcons
+                    name="cards-heart-outline"
+                    size={24}
+                    color="black"
+                  />
+                )
+              }
+              onPress={likeButtonClickHandler}
+              size={10}
+            />
             <Text>{item.likedBy.length}</Text>
           </View>
+          <View style={styles.iconButton}>
+            <IconButton
+              icon={() => (
+                <MaterialCommunityIcons
+                  name="comment-processing-outline"
+                  size={24}
+                  color="black"
+                />
+              )}
+              onPress={commentButtonClickHandler}
+              size={10}
+            />
+            <Text>{comments.length}</Text>
+          </View>
         </View>
-        {postImageURL && (
-          <View style={styles.contentSection}>
-            {postImageURL && (
-              <Image
-                source={{ uri: postImageURL }}
-                style={{ width: '100%', height: 200 }}
+
+        <Text>{item.text}</Text>
+
+        <View style={styles.commentSection}>
+          {currentUserImageURL && (
+            <Avatar.Image size={28} source={{ uri: currentUserImageURL }} />
+          )}
+          <TextInput
+            ref={inputRef}
+            style={styles.commentTextInput}
+            value={commentText}
+            onChangeText={setCommentText}
+            placeholder="share your thoughts"
+          />
+          <IconButton
+            icon={() => (
+              <MaterialCommunityIcons
+                name="send-outline"
+                size={20}
+                color="black"
               />
             )}
-
-            <Text>{item.text}</Text>
-          </View>
-        )}
+            onPress={newCommentHandler}
+            size={10}
+          />
+        </View>
       </Card.Content>
     </Card>
   );
@@ -91,24 +197,36 @@ export default function Post({ item }) {
 
 const styles = StyleSheet.create({
   cardContent: {
-    rowGap: 10,
+    rowGap: 12,
   },
-  upperSection: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  userInfo: {
+  userSection: {
     flexDirection: 'row',
     alignItems: 'center',
     columnGap: 6,
   },
   usernameText: { fontWeight: 'bold' },
   timeText: { fontSize: 12 },
-  like: {
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 6,
+  },
+  iconButton: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
-  contentSection: {
-    rowGap: 6,
+  commentSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 6,
+  },
+  commentTextInput: {
+    flexGrow: 1,
+  },
+  commentButton: {
+    flex: 1,
+    position: 'absolute',
+    inset: 0,
+    zIndex: 10,
   },
 });

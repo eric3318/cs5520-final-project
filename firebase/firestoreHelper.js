@@ -2,42 +2,50 @@ import { database, storage } from './firebaseSetup';
 
 import {
   addDoc,
+  arrayRemove,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
   getDoc,
-  updateDoc,
-  arrayUnion,
-  arrayRemove,
+  getDocs,
   setDoc,
+  updateDoc,
 } from 'firebase/firestore';
 import { getDownloadURL, ref } from 'firebase/storage';
 
 export const COLLECTIONS = {
   USER: 'users',
   POST: 'posts',
+  COMMENT: 'comments',
   APPOINTMENT: 'appointments',
 };
 
-export async function writeToDB(data, collectionName, id = null) {
+export async function writeToDB(
+  data,
+  collectionName,
+  subCollectionName = null,
+  id = null
+) {
   try {
-    if (id) {
-      await updateDoc(doc(database, collectionName, id), data);
-    } else {
-      await addDoc(collection(database, collectionName), data);
-    }
-  } catch (err) {
-    console.log(err);
-  }
-}
-
-export async function writeToDBV2(data, collectionName, id = null) {
-  try {
-    if (id) {
+    if (id && !subCollectionName) {
       await setDoc(doc(database, collectionName, id), data);
-    } else {
-      await addDoc(collection(database, collectionName), data);
+      return;
     }
+
+    let collectionRef;
+    if (!subCollectionName) {
+      collectionRef = collection(database, collectionName);
+    } else {
+      if (!id) {
+        throw new Error('Id must be specified when adding subCollection');
+      }
+      collectionRef = collection(
+        doc(database, `${collectionName}/${id}`),
+        subCollectionName
+      );
+    }
+    await addDoc(collectionRef, data);
   } catch (err) {
     console.log(err);
   }
@@ -67,7 +75,7 @@ export async function deleteFromDB(id, collectionName) {
   }
 }
 
-export async function readFromDB(id, collectionName) {
+export async function readFromDB(collectionName, id) {
   try {
     const document = await getDoc(doc(database, collectionName, id));
     if (!document.exists()) {
@@ -77,6 +85,20 @@ export async function readFromDB(id, collectionName) {
   } catch (err) {
     console.log(err);
     return null;
+  }
+}
+
+export async function readAllFromDB(collectionName, subCollectionName, id) {
+  try {
+    let collectionRef = collection(
+      doc(database, collectionName, id),
+      subCollectionName
+    );
+    const querySnapshot = await getDocs(collectionRef);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (err) {
+    console.log(err);
+    return [];
   }
 }
 

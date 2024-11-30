@@ -2,7 +2,7 @@ import { Alert, Image, StyleSheet, View } from 'react-native';
 import { COLLECTIONS, writeToDB } from '../firebase/firestoreHelper';
 import { Button, TextInput } from 'react-native-paper';
 import { useState } from 'react';
-import { auth, storage } from '../firebase/firebaseSetup';
+import { storage } from '../firebase/firebaseSetup';
 import ImageManager from '../components/ImageManager';
 import { newPostImageStyle } from '../utils/constants';
 import { ref, uploadBytesResumable, getMetadata } from 'firebase/storage';
@@ -33,7 +33,7 @@ export default function NewPost({ navigation }) {
         imageUri: userInfo.imageUri,
         username: userInfo.username,
       },
-      likedBy: [currentUser.uid],
+      likedBy: [],
       timestamp: new Date().toISOString(),
     };
 
