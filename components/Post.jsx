@@ -19,11 +19,15 @@ export default function Post({ item }) {
   const [postImageURL, setPostImageURL] = useState('');
   const [postUserImageURL, setPostUserImageURL] = useState('');
   const [currentUserImageURL, setCurrentUserImageURL] = useState('');
-  const [liked, setLiked] = useState(item.likedBy.includes(currentUser.uid));
+  const [liked, setLiked] = useState(false);
   const [comments, setComments] = useState([]);
   const [commentText, setCommentText] = useState('');
   const navigation = useNavigation();
   const inputRef = useRef(null);
+
+  useEffect(() => {
+    setLiked(item.likedBy.includes(currentUser.uid));
+  }, [item]);
 
   useEffect(() => {
     (async () => {
@@ -122,7 +126,7 @@ export default function Post({ item }) {
   };
 
   return (
-    <Card>
+    <Card style={{ borderRadius: 0 }}>
       <Card.Content style={styles.cardContent}>
         <View style={styles.upperSection}>
           <View style={styles.userSection}>
@@ -166,48 +170,56 @@ export default function Post({ item }) {
         {postImageURL && (
           <Image
             source={{ uri: postImageURL }}
-            style={{ width: '100%', height: 200 }}
+            style={{ width: '100%', height: 300 }}
           />
         )}
 
         <View style={styles.iconContainer}>
           <View style={styles.iconButton}>
-            <IconButton
-              icon={() =>
-                liked ? (
+            {liked ? (
+              <IconButton
+                icon={() => (
                   <MaterialCommunityIcons
                     name="cards-heart"
                     size={24}
                     color="red"
                   />
-                ) : (
+                )}
+                onPress={likeButtonClickHandler}
+                size={10}
+              />
+            ) : (
+              <IconButton
+                icon={() => (
                   <MaterialCommunityIcons
                     name="cards-heart-outline"
                     size={24}
                     color="black"
                   />
-                )
-              }
-              onPress={likeButtonClickHandler}
-              size={10}
-            />
+                )}
+                onPress={likeButtonClickHandler}
+                size={10}
+              />
+            )}
+
             <Text>{item.likedBy.length}</Text>
           </View>
-          <View style={styles.iconButton}>
-            <IconButton
-              icon={() => (
-                <MaterialCommunityIcons
-                  name="comment-processing-outline"
-                  size={24}
-                  color="black"
-                />
-              )}
-              onPress={commentButtonClickHandler}
-              size={10}
-              disabled={comments.length === 0}
-            />
-            <Text>{comments.length}</Text>
-          </View>
+          {comments.length > 0 && (
+            <View style={styles.iconButton}>
+              <IconButton
+                icon={() => (
+                  <MaterialCommunityIcons
+                    name="comment-processing-outline"
+                    size={24}
+                    color="black"
+                  />
+                )}
+                onPress={commentButtonClickHandler}
+                size={10}
+              />
+              <Text>{comments.length}</Text>
+            </View>
+          )}
         </View>
 
         <Text>{item.text}</Text>

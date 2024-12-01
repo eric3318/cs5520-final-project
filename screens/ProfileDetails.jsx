@@ -2,10 +2,10 @@ import { FlatList, View } from 'react-native';
 import { auth, database } from '../firebase/firebaseSetup';
 import { useCallback, useEffect, useState } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import Post from '../components/Post';
 import AppointmentCard from '../components/AppointmentCard';
 import NotificationManager from '../components/NotificationManager';
 import { COLLECTIONS } from '../firebase/firestoreHelper';
+import MiniPost from '../components/MiniPost';
 
 export default function ProfileDetails({ navigation, route }) {
   const { currentUser } = auth;
@@ -69,6 +69,20 @@ export default function ProfileDetails({ navigation, route }) {
     );
   }, []);
 
+  /*  useEffect(() => {
+    let unsubscribeFunction = getUnsubscribeFunction();
+    return () => unsubscribeFunction();
+  }, []);*/
+
+  /*  const getUnsubscribeFunction = () => {
+    switch (option) {
+      case 'Appointments':
+      case 'Liked Posts':
+      case 'Posts':
+        return unsubscribePosts;
+    }
+  };*/
+
   const toggleNotifier = (appointmentId) => {
     setShowNotifier((prev) =>
       prev === null
@@ -81,7 +95,12 @@ export default function ProfileDetails({ navigation, route }) {
 
   const renderMyPosts = () => {
     return (
-      <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <MiniPost item={item} />}
+        numColumns={2}
+      />
     );
   };
 
@@ -111,7 +130,9 @@ export default function ProfileDetails({ navigation, route }) {
     return (
       <FlatList
         data={likedPosts}
-        renderItem={({ item }) => <Post item={item} />}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <MiniPost item={item} option="Liked Posts" />}
+        numColumns={2}
       />
     );
   };

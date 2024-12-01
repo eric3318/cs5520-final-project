@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Card } from 'react-native-paper';
-import UserAvatar from '../components/UserAvatar';
+import { Avatar, Card } from 'react-native-paper';
 import ProfileOption from '../components/ProfileOption';
 import { useAuth } from '../hook/useAuth';
-import { Avatar } from 'react-native-paper';
 import { readFromStorage } from '../firebase/firestoreHelper';
 
 export default function Profile({ navigation }) {

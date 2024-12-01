@@ -39,11 +39,7 @@ export default function Discovery({ navigation }) {
   }, [navigation]);
 
   return (
-    <FlatList
-      data={posts}
-      renderItem={({ item }) => <Post item={item} />}
-      pagingEnabled
-    />
+    <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
   );
 }
 
