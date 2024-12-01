@@ -9,7 +9,6 @@ import {
   Image,
 } from 'react-native';
 import axios from 'axios';
-import { YOUTUBE_API_KEY } from '../utils/constants';
 import { useNavigation } from '@react-navigation/native';
 
 const VideosScreen = ({ route }) => {
@@ -30,7 +29,7 @@ const VideosScreen = ({ route }) => {
           params: {
             part: 'snippet',
             q: query,
-            key: YOUTUBE_API_KEY,
+            key: process.env.EXPO_PUBLIC_YOUTUBE_API_KEY,
             maxResults: 10,
           },
         }
