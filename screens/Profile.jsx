@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Avatar, Card } from 'react-native-paper';
 import ProfileOption from '../components/ProfileOption';
 import { useAuth } from '../hook/useAuth';
 import { readFromStorage } from '../firebase/firestoreHelper';
+import { format } from 'date-fns';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 export default function Profile({ navigation }) {
-  const { userInfo } = useAuth();
+  const { currentUser, userInfo } = useAuth();
   const [imageURL, setImageURL] = useState('');
 
   const clickHandler = (option) => {
@@ -28,16 +30,26 @@ export default function Profile({ navigation }) {
         <Card style={styles.profileCard}>
           <Card.Title
             title={userInfo.username}
-            subtitle={`Member since: ${new Date(userInfo.createdAt)}`}
+            subtitle={`Since ${format(new Date(userInfo.createdAt), 'MMM yyyy')}`}
             left={() =>
-              imageURL && (
-                <Avatar.Image source={{ uri: imageURL }}> </Avatar.Image>
-              )
+              imageURL && <Avatar.Image source={{ uri: imageURL }} size={60} />
             }
             titleStyle={styles.title}
             subtitleStyle={styles.subtitle}
             leftStyle={styles.leftAvatar}
           />
+          <Card.Content>
+            <View style={{ marginLeft: 52 }}>
+              <View style={styles.userInfoItem}>
+                <MaterialCommunityIcons
+                  name="email-outline"
+                  size={18}
+                  color="black"
+                />
+                <Text>{currentUser.email}</Text>
+              </View>
+            </View>
+          </Card.Content>
         </Card>
       )}
 
@@ -50,7 +62,7 @@ export default function Profile({ navigation }) {
         <ProfileOption
           icon="post"
           label="My Posts"
-          onPress={() => clickHandler('Posts')}
+          onPress={() => clickHandler('My Posts')}
         />
         <ProfileOption
           icon="star"
@@ -64,11 +76,15 @@ export default function Profile({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    //a  marginTop: 128,
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
     width: '100%',
+  },
+  userInfoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    columnGap: 3,
   },
   profileCard: {
     width: '100%',
@@ -108,7 +124,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   leftAvatar: {
-    marginRight: 48,
+    marginRight: 30,
     marginLeft: -16,
   },
   optionsContainer: {
