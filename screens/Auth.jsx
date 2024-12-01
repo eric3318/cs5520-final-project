@@ -1,6 +1,6 @@
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { auth } from '../firebase/firebaseSetup';
 import {
   createUserWithEmailAndPassword,
@@ -26,6 +26,10 @@ export default function Auth({ navigation }) {
     setMode(SIGNUP);
   };
 
+  useEffect(() => {
+    navigation.setOptions({ headerTitle: mode });
+  }, [navigation, mode]);
+
   const authHandler = () => {
     switch (mode) {
       case SIGNUP:
@@ -35,6 +39,10 @@ export default function Auth({ navigation }) {
         logInHandler();
         break;
     }
+  };
+
+  const resetButtonClickHandler = () => {
+    navigation.push('Password Reset');
   };
 
   const signUpHandler = async () => {
@@ -106,6 +114,12 @@ export default function Auth({ navigation }) {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
+      )}
+      {mode === LOGIN && (
+        <View style={[styles.prompt, { justifyContent: 'flex-start' }]}>
+          <Text>Forgot password?</Text>
+          <Button onPress={resetButtonClickHandler}>Reset</Button>
+        </View>
       )}
       <View>
         <Button mode="contained" onPress={() => authHandler()}>

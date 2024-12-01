@@ -25,6 +25,7 @@ import Loading from './components/Loading';
 import { initializeTrainers } from './utils/helpers';
 import * as Notifications from 'expo-notifications';
 import PostDetails from './screens/PostDetails';
+import PasswordReset from './screens/PasswordReset';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => {
@@ -137,7 +138,10 @@ function Navigation() {
             />
           </>
         ) : (
-          <Stack.Screen name="Auth" component={Auth} />
+          <>
+            <Stack.Screen name="Auth" component={Auth} />
+            <Stack.Screen name="Password Reset" component={PasswordReset} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
