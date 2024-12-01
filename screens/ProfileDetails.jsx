@@ -55,7 +55,7 @@ export default function ProfileDetails({ navigation, route }) {
           case 'Appointments':
             setAppointments(newArray);
             break;
-          case 'Posts':
+          case 'My Posts':
             setPosts(newArray);
             break;
           case 'Liked Posts':
@@ -98,7 +98,7 @@ export default function ProfileDetails({ navigation, route }) {
       <FlatList
         data={posts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <MiniPost item={item} />}
+        renderItem={({ item }) => <MiniPost item={item} option={option} />}
         numColumns={2}
       />
     );
@@ -131,7 +131,7 @@ export default function ProfileDetails({ navigation, route }) {
       <FlatList
         data={likedPosts}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <MiniPost item={item} option="Liked Posts" />}
+        renderItem={({ item }) => <MiniPost item={item} option={option} />}
         numColumns={2}
       />
     );
@@ -141,7 +141,7 @@ export default function ProfileDetails({ navigation, route }) {
     <View>
       {option === 'Appointments'
         ? renderMyAppointments()
-        : option === 'Posts'
+        : option === 'My Posts'
           ? renderMyPosts()
           : renderLikedPosts()}
     </View>

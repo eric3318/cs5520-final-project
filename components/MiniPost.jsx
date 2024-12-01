@@ -12,7 +12,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useAuth } from '../hook/useAuth';
 import { useNavigation } from '@react-navigation/native';
 
-function MiniPost({ item, option = 'Posts' }) {
+function MiniPost({ item, option }) {
   const { currentUser } = useAuth();
   const [postImageURL, setPostImageURL] = useState('');
   const [userImageURL, setUserImageURL] = useState('');
@@ -72,7 +72,7 @@ function MiniPost({ item, option = 'Posts' }) {
         </View>
       )}
 
-      {option === 'Posts' && (
+      {option === 'My Posts' && (
         <View style={styles.iconContainer}>
           <IconButton
             icon={() => (
