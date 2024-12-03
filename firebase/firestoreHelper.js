@@ -19,6 +19,8 @@ export const COLLECTIONS = {
   POST: 'posts',
   COMMENT: 'comments',
   APPOINTMENT: 'appointments',
+  APP_SETUP: 'appSetup',
+  TRAINER: 'trainers',
 };
 
 export async function writeToDB(
@@ -104,7 +106,7 @@ export async function readAllFromDB(collectionName, subCollectionName, id) {
 
 export async function getBookedTimeslots(trainerId, date) {
   try {
-    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerRef = doc(database, COLLECTIONS.TRAINER, trainerId);
     const trainerDoc = await getDoc(trainerRef);
     if (trainerDoc.exists()) {
       const bookedTimeslots = trainerDoc.data().bookedTimeslots || {};
@@ -119,7 +121,7 @@ export async function getBookedTimeslots(trainerId, date) {
 
 export async function getAllBookedTimeslots(trainerId) {
   try {
-    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerRef = doc(database, COLLECTIONS.TRAINER, trainerId);
     const trainerDoc = await getDoc(trainerRef);
     if (trainerDoc.exists()) {
       return trainerDoc.data().bookedTimeslots || {};
@@ -133,7 +135,7 @@ export async function getAllBookedTimeslots(trainerId) {
 
 export async function addBookedTimeslot(trainerId, date, time) {
   try {
-    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerRef = doc(database, COLLECTIONS.TRAINER, trainerId);
     await updateDoc(trainerRef, {
       [`bookedTimeslots.${date}`]: arrayUnion(time),
     });
@@ -144,7 +146,7 @@ export async function addBookedTimeslot(trainerId, date, time) {
 
 export async function addAppointment(user, trainerId, trainerName, datetime) {
   try {
-    await addDoc(collection(database, 'Appointments'), {
+    await addDoc(collection(database, COLLECTIONS.APPOINTMENT), {
       user,
       trainerId,
       trainerName,
@@ -157,13 +159,17 @@ export async function addAppointment(user, trainerId, trainerName, datetime) {
 
 export async function cancelAppointment(appointmentId, trainerId, date, time) {
   try {
-    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerRef = doc(database, COLLECTIONS.TRAINER, trainerId);
 
     await updateDoc(trainerRef, {
       [`bookedTimeslots.${date}`]: arrayRemove(time),
     });
 
-    const appointmentRef = doc(database, 'Appointments', appointmentId);
+    const appointmentRef = doc(
+      database,
+      COLLECTIONS.APPOINTMENT,
+      appointmentId
+    );
     await deleteDoc(appointmentRef);
   } catch (error) {
     console.error('Error cancelling appointment:', error);

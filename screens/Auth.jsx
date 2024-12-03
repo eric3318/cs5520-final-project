@@ -12,7 +12,7 @@ const SIGNUP = 'Sign Up';
 const LOGIN = 'Log In';
 
 export default function Auth({ navigation }) {
-  const [mode, setMode] = useState(SIGNUP);
+  const [mode, setMode] = useState(LOGIN);
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
