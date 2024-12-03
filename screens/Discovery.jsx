@@ -39,7 +39,11 @@ export default function Discovery({ navigation }) {
   }, [navigation]);
 
   return (
-    <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
+    <FlatList
+      data={posts}
+      renderItem={({ item }) => <Post item={item} />}
+      keyExtractor={(item) => item.id}
+    />
   );
 }
 

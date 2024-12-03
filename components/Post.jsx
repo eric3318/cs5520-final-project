@@ -46,7 +46,7 @@ export default function Post({ item }) {
       if (url2) setPostImageURL(url2);
       if (url3) setPostUserImageURL(url3);
     })();
-  }, []);
+  }, [item, userInfo]);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
