@@ -15,6 +15,9 @@ CRUD operations: create user, read current user information<br>
 **Comment fields**: text, user (uid, username, imageUri)
 CRUD operations: create a comment, read all comments
 
+**Firebase Rules**:<br>
+![img_15.png](img_15.png)<br>
+
 **Contributions**<br>
 Zhiyu:<br>
 Zhiyu implemented the code for "Video" screen (accessed via exercise screen). For Video screen, Zhiyu added codes to make user able to navigate to video lists with specific category (fetched via Youtube API) via clicking on the category card on the exercise screen. Also, Zhiyu implemented the search function that when user typed in specific keyword, the screen with video lists that contain videos related to specific keywords will be shown. Also, when user clicked on the video of the video list, user would navigate to the video player screen where via webview user can indeed watch the video.<br> 
