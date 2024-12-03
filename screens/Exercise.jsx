@@ -1,5 +1,6 @@
 import React from 'react';
 import { FlatList, StyleSheet, View } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import SearchBar from '../components/SearchBar';
 import CategoryCard from '../components/CategoryCard';
 
@@ -22,23 +23,27 @@ const categories = [
     image:
       'https://images.pexels.com/photos/7339492/pexels-photo-7339492.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
   },
-  /*{
+  {
     id: '4',
     name: 'Ankle',
     image:
       'https://images.pexels.com/photos/7991959/pexels-photo-7991959.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
   },
-  */
 ];
 
 const Exercise = () => {
+  const navigation = useNavigation();
   const handleCategoryPress = (categoryName) => {
     // Todo: new screen displaying videos
+    navigation.navigate('Videos', { categoryName });
+  };
+  const handleSearch = (query) => {
+    navigation.navigate('Videos', { categoryName: query });
   };
 
   return (
     <View style={styles.container}>
-      <SearchBar />
+      <SearchBar onSearch={handleSearch} />
 
       <FlatList
         data={categories}

@@ -8,7 +8,8 @@ import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
 import Reserve from './screens/Reserve';
 import TrainerMap from './screens/TrainerMap';
-import { View } from 'react-native';
+import VideosScreen from './screens/VideosScreen';
+import VideoPlayerScreen from './screens/VideoPlayerScreen';
 import Auth from './screens/Auth';
 import ProfileDetails from './screens/ProfileDetails';
 import React, { useEffect } from 'react';
@@ -25,6 +26,8 @@ import { AuthProvider } from './context/authContext';
 import Loading from './components/Loading';
 import { initializeTrainers } from './utils/helpers';
 import * as Notifications from 'expo-notifications';
+import PostDetails from './screens/PostDetails';
+import PasswordReset from './screens/PasswordReset';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => {
@@ -102,7 +105,7 @@ function Tabs() {
 }
 
 function Navigation() {
-  const [authenticated] = useAuth();
+  const { authenticated } = useAuth();
 
   if (authenticated === null) {
     return <Loading />;
@@ -120,13 +123,8 @@ function Navigation() {
                 headerShown: false,
               }}
             />
-            <Stack.Screen
-              name="New Post"
-              component={NewPost}
-              options={{
-                title: 'Make New Post',
-              }}
-            />
+            <Stack.Screen name="New Post" component={NewPost} />
+            <Stack.Screen name="Post Details" component={PostDetails} />
             <Stack.Screen name="Profile Details" component={ProfileDetails} />
             <Stack.Screen
               name="Reserve"
@@ -140,9 +138,22 @@ function Navigation() {
               component={TrainerMap}
               options={{ title: 'Find Trainers' }}
             />
+            <Stack.Screen
+              name="Videos"
+              component={VideosScreen}
+              options={{ title: 'Videos' }}
+            />
+            <Stack.Screen
+              name="VideoPlayer"
+              component={VideoPlayerScreen}
+              options={{ title: 'Watch Video' }}
+            />
           </>
         ) : (
-          <Stack.Screen name="Auth" component={Auth} />
+          <>
+            <Stack.Screen name="Auth" component={Auth} />
+            <Stack.Screen name="Password Reset" component={PasswordReset} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

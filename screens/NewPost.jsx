@@ -1,25 +1,43 @@
 import { Alert, Image, StyleSheet, View } from 'react-native';
-import { writeToDB } from '../firebase/firestoreHelper';
+import {
+  COLLECTIONS,
+  readFromStorage,
+  updateDB,
+  writeToDB,
+} from '../firebase/firestoreHelper';
 import { Button, TextInput } from 'react-native-paper';
-import { useState } from 'react';
-import { auth, storage } from '../firebase/firebaseSetup';
+import { useEffect, useState } from 'react';
+import { storage } from '../firebase/firebaseSetup';
 import ImageManager from '../components/ImageManager';
 import { newPostImageStyle } from '../utils/constants';
-import {
-  getDownloadURL,
-  ref,
-  uploadBytesResumable,
-  getMetadata,
-} from 'firebase/storage';
+import { getMetadata, ref, uploadBytesResumable } from 'firebase/storage';
+import { useAuth } from '../hook/useAuth';
 
-export default function NewPost({ navigation }) {
+export default function NewPost({ navigation, route }) {
+  const post = route.params?.post ?? null;
   const [imageUri, setImageUri] = useState('');
-  const [text, setText] = useState('');
-  const { currentUser } = auth;
+  const [imageURL, setImageURL] = useState('');
+  const [text, setText] = useState(post?.text ?? '');
+  const { currentUser, userInfo } = useAuth();
 
   const imageHandler = (uri) => {
     setImageUri(uri);
   };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: post ? 'Edit Post' : 'Make New Post',
+    });
+  }, []);
+
+  useEffect(() => {
+    if (post) {
+      (async () => {
+        let url = await readFromStorage(post.imageUri);
+        setImageURL(url);
+      })();
+    }
+  }, []);
 
   const postHandler = async () => {
     if (!text || !imageUri) {
@@ -29,19 +47,41 @@ export default function NewPost({ navigation }) {
 
     let uri = await uploadImage(imageUri);
 
-    const post = {
+    let newPost = {
       text,
       imageUri: uri,
-      user: currentUser.uid,
-      likedBy: [currentUser.uid],
+      user: {
+        uid: currentUser.uid,
+        imageUri: userInfo.imageUri,
+        username: userInfo.username,
+      },
+      likedBy: [],
       timestamp: new Date().toISOString(),
     };
 
     try {
-      await writeToDB(post, 'Posts');
+      await writeToDB(newPost, COLLECTIONS.POST);
       navigation.goBack();
     } catch (err) {
       Alert.alert('Failed to create new post');
+      console.log(err);
+    }
+  };
+
+  const editHandler = async () => {
+    if (!text) {
+      Alert.alert('Missing required fields');
+      return;
+    }
+    let newPost = {
+      ...post,
+      text,
+    };
+    try {
+      await updateDB(newPost, COLLECTIONS.POST, post.id);
+      navigation.goBack();
+    } catch (err) {
+      Alert.alert('Failed to edit post');
       console.log(err);
     }
   };
@@ -61,9 +101,12 @@ export default function NewPost({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {imageUri ? (
+      {imageUri || imageURL ? (
         <>
-          <Image source={{ uri: imageUri }} style={newPostImageStyle} />
+          <Image
+            source={{ uri: imageUri || imageURL }}
+            style={newPostImageStyle}
+          />
           <TextInput
             label="Content"
             mode="outlined"
@@ -72,8 +115,8 @@ export default function NewPost({ navigation }) {
               setText(text);
             }}
           />
-          <Button onPress={postHandler} mode="contained">
-            Make Post
+          <Button onPress={post ? editHandler : postHandler} mode="contained">
+            {post ? 'Confirm Edit' : 'Make Post'}
           </Button>
         </>
       ) : (

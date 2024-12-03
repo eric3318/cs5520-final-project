@@ -1,17 +1,18 @@
 import { Alert, StyleSheet, Text, View } from 'react-native';
 import { Button, TextInput } from 'react-native-paper';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { auth } from '../firebase/firebaseSetup';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from 'firebase/auth';
+import { COLLECTIONS, writeToDB } from '../firebase/firestoreHelper';
 
 const SIGNUP = 'Sign Up';
 const LOGIN = 'Log In';
 
 export default function Auth({ navigation }) {
-  const [mode, setMode] = useState(SIGNUP);
+  const [mode, setMode] = useState(LOGIN);
   const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -25,6 +26,10 @@ export default function Auth({ navigation }) {
     setMode(SIGNUP);
   };
 
+  useEffect(() => {
+    navigation.setOptions({ headerTitle: mode });
+  }, [navigation, mode]);
+
   const authHandler = () => {
     switch (mode) {
       case SIGNUP:
@@ -34,6 +39,10 @@ export default function Auth({ navigation }) {
         logInHandler();
         break;
     }
+  };
+
+  const resetButtonClickHandler = () => {
+    navigation.push('Password Reset');
   };
 
   const signUpHandler = async () => {
@@ -46,18 +55,31 @@ export default function Auth({ navigation }) {
       return;
     }
     // todo: add more data verification
+    let userCred;
     try {
-      const userCred = await createUserWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      console.log(userCred);
+      userCred = await createUserWithEmailAndPassword(auth, email, password);
     } catch (err) {
       if (err.code === 'auth/weak-password') {
         Alert.alert('Password should be at least 6 characters');
       }
       console.log(err);
+    }
+
+    if (userCred) {
+      try {
+        await writeToDB(
+          {
+            username,
+            imageUri: 'images/Default.JPG',
+            createdAt: new Date().toISOString(),
+          },
+          COLLECTIONS.USER,
+          null,
+          userCred.user.uid
+        );
+      } catch (err) {
+        console.log(err);
+      }
     }
   };
 
@@ -92,6 +114,12 @@ export default function Auth({ navigation }) {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
+      )}
+      {mode === LOGIN && (
+        <View style={[styles.prompt, { justifyContent: 'flex-start' }]}>
+          <Text>Forgot password?</Text>
+          <Button onPress={resetButtonClickHandler}>Reset</Button>
+        </View>
       )}
       <View>
         <Button mode="contained" onPress={() => authHandler()}>

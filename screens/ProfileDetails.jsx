@@ -1,12 +1,13 @@
-import { View, FlatList } from 'react-native';
-import { database, auth } from '../firebase/firebaseSetup';
-import { useEffect, useState, useCallback } from 'react';
+import { FlatList, View } from 'react-native';
+import { auth, database } from '../firebase/firebaseSetup';
+import { useCallback, useEffect, useState } from 'react';
 import { collection, onSnapshot, query, where } from 'firebase/firestore';
-import Post from '../components/Post';
 import AppointmentCard from '../components/AppointmentCard';
 import NotificationManager from '../components/NotificationManager';
+import { COLLECTIONS } from '../firebase/firestoreHelper';
+import MiniPost from '../components/MiniPost';
 
-export default function ProfileDetails({ route }) {
+export default function ProfileDetails({ navigation, route }) {
   const { currentUser } = auth;
   const { option } = route.params;
   const [posts, setPosts] = useState([]);
@@ -14,9 +15,15 @@ export default function ProfileDetails({ route }) {
   const [appointments, setAppointments] = useState([]);
   const [showNotifier, setShowNotifier] = useState(null);
 
+  useEffect(() => {
+    navigation.setOptions({
+      headerTitle: option,
+    });
+  }, [navigation]);
+
   const refreshAppointments = useCallback(() => {
     const q = query(
-      collection(database, 'Appointments'),
+      collection(database, COLLECTIONS.APPOINTMENT),
       where('user', '==', currentUser.uid)
     );
     onSnapshot(q, (querySnapshot) => {
@@ -33,11 +40,13 @@ export default function ProfileDetails({ route }) {
       query(
         collection(
           database,
-          option === 'Appointments' ? 'Appointments' : 'Posts'
+          option === 'Appointments' ? COLLECTIONS.APPOINTMENT : COLLECTIONS.POST
         ),
-        option !== 'Liked Posts'
-          ? where('user', '==', currentUser.uid)
-          : where('likedBy', 'array-contains', currentUser.uid)
+        option === 'Liked Posts'
+          ? where('likedBy', 'array-contains', currentUser.uid)
+          : option === 'Appointments'
+            ? where('user', '==', currentUser.uid)
+            : where('user.uid', '==', currentUser.uid)
       ),
       (querySnapshot) => {
         let newArray = [];
@@ -48,7 +57,7 @@ export default function ProfileDetails({ route }) {
           case 'Appointments':
             setAppointments(newArray);
             break;
-          case 'Posts':
+          case 'My Posts':
             setPosts(newArray);
             break;
           case 'Liked Posts':
@@ -62,6 +71,20 @@ export default function ProfileDetails({ route }) {
     );
   }, []);
 
+  /*  useEffect(() => {
+    let unsubscribeFunction = getUnsubscribeFunction();
+    return () => unsubscribeFunction();
+  }, []);*/
+
+  /*  const getUnsubscribeFunction = () => {
+    switch (option) {
+      case 'Appointments':
+      case 'Liked Posts':
+      case 'Posts':
+        return unsubscribePosts;
+    }
+  };*/
+
   const toggleNotifier = (appointmentId) => {
     setShowNotifier((prev) =>
       prev === null
@@ -74,7 +97,12 @@ export default function ProfileDetails({ route }) {
 
   const renderMyPosts = () => {
     return (
-      <FlatList data={posts} renderItem={({ item }) => <Post item={item} />} />
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <MiniPost item={item} option={option} />}
+        numColumns={2}
+      />
     );
   };
 
@@ -104,7 +132,9 @@ export default function ProfileDetails({ route }) {
     return (
       <FlatList
         data={likedPosts}
-        renderItem={({ item }) => <Post item={item} />}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <MiniPost item={item} option={option} />}
+        numColumns={2}
       />
     );
   };
@@ -113,7 +143,7 @@ export default function ProfileDetails({ route }) {
     <View>
       {option === 'Appointments'
         ? renderMyAppointments()
-        : option === 'Posts'
+        : option === 'My Posts'
           ? renderMyPosts()
           : renderLikedPosts()}
     </View>

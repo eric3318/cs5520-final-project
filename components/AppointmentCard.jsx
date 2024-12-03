@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import { cancelAppointment } from '../firebase/firestoreHelper';
 import { Button } from 'react-native-paper';
 

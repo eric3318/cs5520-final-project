@@ -1,29 +1,75 @@
-import { database } from './firebaseSetup';
+import { database, storage } from './firebaseSetup';
 
 import {
   addDoc,
+  arrayRemove,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
+  setDoc,
   updateDoc,
-  arrayUnion,
-  arrayRemove,
 } from 'firebase/firestore';
+import { getDownloadURL, ref } from 'firebase/storage';
 
-export async function writeToDB(data, collectionName, id = null) {
+export const COLLECTIONS = {
+  USER: 'users',
+  POST: 'posts',
+  COMMENT: 'comments',
+  APPOINTMENT: 'appointments',
+  APP_SETUP: 'appSetup',
+  TRAINER: 'trainers',
+};
+
+export async function writeToDB(
+  data,
+  collectionName,
+  subCollectionName = null,
+  id = null
+) {
   try {
-    if (id) {
-      await updateDoc(doc(database, collectionName, id), data);
-    } else {
-      await addDoc(collection(database, collectionName), data);
+    if (id && !subCollectionName) {
+      await setDoc(doc(database, collectionName, id), data);
+      return;
     }
+
+    let collectionRef;
+    if (!subCollectionName) {
+      collectionRef = collection(database, collectionName);
+    } else {
+      if (!id) {
+        throw new Error('Id must be specified when adding subCollection');
+      }
+      collectionRef = collection(
+        doc(database, `${collectionName}/${id}`),
+        subCollectionName
+      );
+    }
+    await addDoc(collectionRef, data);
   } catch (err) {
     console.log(err);
   }
 }
 
-export async function deleteFromDB(id, collectionName) {
+export async function readFromStorage(path) {
+  try {
+    return await getDownloadURL(ref(storage, path));
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function updateDB(data, collectionName, id) {
+  try {
+    await updateDoc(doc(database, collectionName, id), data);
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+export async function deleteFromDB(collectionName, id) {
   try {
     await deleteDoc(doc(database, collectionName, id));
   } catch (err) {
@@ -31,9 +77,36 @@ export async function deleteFromDB(id, collectionName) {
   }
 }
 
+export async function readFromDB(collectionName, id) {
+  try {
+    const document = await getDoc(doc(database, collectionName, id));
+    if (!document.exists()) {
+      throw new Error('The document requested does not exist in database');
+    }
+    return document.data();
+  } catch (err) {
+    console.log(err);
+    return null;
+  }
+}
+
+export async function readAllFromDB(collectionName, subCollectionName, id) {
+  try {
+    let collectionRef = collection(
+      doc(database, collectionName, id),
+      subCollectionName
+    );
+    const querySnapshot = await getDocs(collectionRef);
+    return querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+}
+
 export async function getBookedTimeslots(trainerId, date) {
   try {
-    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerRef = doc(database, COLLECTIONS.TRAINER, trainerId);
     const trainerDoc = await getDoc(trainerRef);
     if (trainerDoc.exists()) {
       const bookedTimeslots = trainerDoc.data().bookedTimeslots || {};
@@ -48,7 +121,7 @@ export async function getBookedTimeslots(trainerId, date) {
 
 export async function getAllBookedTimeslots(trainerId) {
   try {
-    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerRef = doc(database, COLLECTIONS.TRAINER, trainerId);
     const trainerDoc = await getDoc(trainerRef);
     if (trainerDoc.exists()) {
       return trainerDoc.data().bookedTimeslots || {};
@@ -62,7 +135,7 @@ export async function getAllBookedTimeslots(trainerId) {
 
 export async function addBookedTimeslot(trainerId, date, time) {
   try {
-    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerRef = doc(database, COLLECTIONS.TRAINER, trainerId);
     await updateDoc(trainerRef, {
       [`bookedTimeslots.${date}`]: arrayUnion(time),
     });
@@ -73,7 +146,7 @@ export async function addBookedTimeslot(trainerId, date, time) {
 
 export async function addAppointment(user, trainerId, trainerName, datetime) {
   try {
-    await addDoc(collection(database, 'Appointments'), {
+    await addDoc(collection(database, COLLECTIONS.APPOINTMENT), {
       user,
       trainerId,
       trainerName,
@@ -86,13 +159,17 @@ export async function addAppointment(user, trainerId, trainerName, datetime) {
 
 export async function cancelAppointment(appointmentId, trainerId, date, time) {
   try {
-    const trainerRef = doc(database, 'Trainer', trainerId);
+    const trainerRef = doc(database, COLLECTIONS.TRAINER, trainerId);
 
     await updateDoc(trainerRef, {
       [`bookedTimeslots.${date}`]: arrayRemove(time),
     });
 
-    const appointmentRef = doc(database, 'Appointments', appointmentId);
+    const appointmentRef = doc(
+      database,
+      COLLECTIONS.APPOINTMENT,
+      appointmentId
+    );
     await deleteDoc(appointmentRef);
   } catch (error) {
     console.error('Error cancelling appointment:', error);

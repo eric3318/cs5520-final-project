@@ -4,7 +4,10 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import TrainerCard from '../components/TrainerCard';
 import { collection, getDocs } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
-import { getAllBookedTimeslots } from '../firebase/firestoreHelper';
+import {
+  COLLECTIONS,
+  getAllBookedTimeslots,
+} from '../firebase/firestoreHelper';
 import { ALL_TIMESLOTS } from '../utils/constants';
 import moment from 'moment';
 import { useFocusEffect } from '@react-navigation/native';
@@ -37,7 +40,7 @@ const Appointment = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       const fetchTrainers = async () => {
-        const trainerCollection = collection(database, 'Trainer');
+        const trainerCollection = collection(database, COLLECTIONS.TRAINER);
         const trainerSnapshot = await getDocs(trainerCollection);
         const trainerList = await Promise.all(
           trainerSnapshot.docs.map(async (doc) => {

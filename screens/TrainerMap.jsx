@@ -14,6 +14,7 @@ import ClusteredMapView from 'react-native-map-clustering';
 import * as Location from 'expo-location';
 import { collection, getDocs } from 'firebase/firestore';
 import { database } from '../firebase/firebaseSetup';
+import { COLLECTIONS } from '../firebase/firestoreHelper';
 
 const TrainerMap = ({ navigation }) => {
   const [trainers, setTrainers] = useState([]);
@@ -28,7 +29,7 @@ const TrainerMap = ({ navigation }) => {
   useEffect(() => {
     const fetchTrainers = async () => {
       try {
-        const trainerCollection = collection(database, 'Trainer');
+        const trainerCollection = collection(database, COLLECTIONS.TRAINER);
         const trainerSnapshot = await getDocs(trainerCollection);
         const trainerList = trainerSnapshot.docs.map((doc) => ({
           id: doc.id,
