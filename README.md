@@ -17,11 +17,10 @@ CRUD operations: create a comment, read all comments
 
 **Contributions**<br>
 Zhiyu:<br>
-Zhiyu implemented the code for "TrainerMap" screen (accessed via "Locate Nearby Trainers" in Appointment screen) . For TrainerMap screen, Zhiyu added markers for user location, and added markers for all trainers. The markers' size would dynamically adjust based on the zoom level. Also, the trainers would be clustered when the map is in a high zoom level. When user clicks on the markers (avatars) of the trainers, there would be a modal showing information of the trainer and button to make an appointment with the trainer. If the user clicks "Reserve", he/she would enter the same reserve screen they would enter if they clicks "Reserve" in appointment screen.<br> 
-<img width="319" alt="Screenshot 2024-11-23 at 6 23 40 PM" src="https://github.com/user-attachments/assets/5f127a11-ea41-47ed-809f-353aafa70c00">
-<img width="319" alt="image" src="https://github.com/user-attachments/assets/28327aff-f2e5-4b94-a9d0-aad7b1b9797f">
-<img width="319" alt="image" src="https://github.com/user-attachments/assets/01a2f50c-f9ea-4f60-a087-ec6d18d6f187">
-<img width="319" alt="image" src="https://github.com/user-attachments/assets/19646b6a-6b03-4bd7-bce0-a76d1669a6ad">
+Zhiyu implemented the code for "Video" screen (accessed via exercise screen). For Video screen, Zhiyu added codes to make user able to navigate to video lists with specific category (fetched via Youtube API) via clicking on the category card on the exercise screen. Also, Zhiyu implemented the search function that when user typed in specific keyword, the screen with video lists that contain videos related to specific keywords will be shown. Also, when user clicked on the video of the video list, user would navigate to the video player screen where via webview user can indeed watch the video.<br> 
+![image](https://github.com/user-attachments/assets/e151bd4f-807b-45c8-9df6-83635506a69c)
+![image](https://github.com/user-attachments/assets/8ff366b9-a25f-4175-84d8-fdb58d06b9e9)
+
 
 Han:<br>
 1. Implemented authentication by adding the Auth screen, using the React Context API for state management,
