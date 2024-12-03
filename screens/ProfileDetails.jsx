@@ -42,9 +42,11 @@ export default function ProfileDetails({ navigation, route }) {
           database,
           option === 'Appointments' ? COLLECTIONS.APPOINTMENT : COLLECTIONS.POST
         ),
-        option !== 'Liked Posts'
-          ? where('user.uid', '==', currentUser.uid)
-          : where('likedBy', 'array-contains', currentUser.uid)
+        option === 'Liked Posts'
+          ? where('likedBy', 'array-contains', currentUser.uid)
+          : option === 'Appointments'
+            ? where('user', '==', currentUser.uid)
+            : where('user.uid', '==', currentUser.uid)
       ),
       (querySnapshot) => {
         let newArray = [];

@@ -46,7 +46,15 @@ export default function Profile({ navigation }) {
                   size={18}
                   color="black"
                 />
-                <Text>{currentUser.email}</Text>
+                <Text style={styles.userInfoText}>{currentUser.email}</Text>
+              </View>
+              <View style={styles.userInfoItem}>
+                <MaterialCommunityIcons
+                  name="identifier"
+                  size={18}
+                  color="black"
+                />
+                <Text style={styles.userInfoText}>{currentUser.uid}</Text>
               </View>
             </View>
           </Card.Content>
@@ -86,6 +94,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     columnGap: 3,
   },
+  userInfoText: { fontSize: 12 },
   profileCard: {
     width: '100%',
     padding: 16,
