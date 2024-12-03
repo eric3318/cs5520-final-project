@@ -8,6 +8,8 @@ import Profile from './screens/Profile';
 import NewPost from './screens/NewPost';
 import Reserve from './screens/Reserve';
 import TrainerMap from './screens/TrainerMap';
+import VideosScreen from './screens/VideosScreen';
+import VideoPlayerScreen from './screens/VideoPlayerScreen';
 import Auth from './screens/Auth';
 import ProfileDetails from './screens/ProfileDetails';
 import React, { useEffect } from 'react';
@@ -135,6 +137,16 @@ function Navigation() {
               name="TrainerMap"
               component={TrainerMap}
               options={{ title: 'Find Trainers' }}
+            />
+            <Stack.Screen
+              name="Videos"
+              component={VideosScreen}
+              options={{ title: 'Videos' }}
+            />
+            <Stack.Screen
+              name="VideoPlayer"
+              component={VideoPlayerScreen}
+              options={{ title: 'Watch Video' }}
             />
           </>
         ) : (
