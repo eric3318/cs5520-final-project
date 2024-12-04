@@ -16,7 +16,42 @@ CRUD operations: create user, read current user information<br>
 CRUD operations: create a comment, read all comments
 
 **Firebase Rules**:<br>
-![img_15.png](img_15.png)<br>
+```
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /posts/{post}{
+    	allow read, write: if request.auth != null;
+    	allow update, delete: if request.auth != null 
+      && request.auth.uid == resource.data.user.uid;
+      match /comments/{comment} {
+        allow read, write: if request.auth != null;
+      }
+    }
+    
+    match /appointments/{appointment}{
+    	allow write: if request.auth != null;
+    	allow read, update, delete: if request.auth != null 
+      && request.auth.uid == resource.data.user;
+    }
+    
+    match /users/{userId} {
+      allow read, write, update: if request.auth != null 
+        && request.auth.uid == userId;
+    }
+    
+    match /appSetup/{doc} {
+      allow read, write;
+    }
+    
+    match /trainers/{trainer}{
+      allow read, write;
+    }
+    
+  }
+}
+```
 
 **Contributions**<br>
 Zhiyu:<br>
